@@ -1,0 +1,49 @@
+{
+  "title": "خانه",
+  "number": 20,
+  "kind": "regular",
+  "order": 200,
+  "dateLabel": "آذر ۱۴۰۴",
+  "description": "روایت‌هایی از خانه، تعلق، دوری و کنار هم بودن؛ شمارهٔ بیستم رایانش.",
+  "toc": [
+    {
+      "title": "سخن سردبیر؛ خانه",
+      "pdfPage": 3,
+      "article": "home-editorial"
+    },
+    {
+      "title": "آنجا که باید…",
+      "pdfPage": 4
+    },
+    {
+      "title": "خوانش‌های این شماره",
+      "pdfPage": 2
+    }
+  ],
+  "credits": [
+    {
+      "role": "سردبیر",
+      "names": [
+        "کیان عموخادم"
+      ]
+    },
+    {
+      "role": "مدیرمسئول",
+      "names": [
+        "پارسا حاجی‌قاسمی"
+      ]
+    },
+    {
+      "role": "دبیر تحریریه",
+      "names": [
+        "محمد بنی‌احمدی"
+      ]
+    }
+  ],
+  "cover": "/covers/20.webp",
+  "coverAlt": "جلد خانه رایانش",
+  "pdf": "/downloads/rayanesh-20.pdf",
+  "pdfPages": 19,
+  "pdfBytes": 25316919,
+  "draft": false
+}

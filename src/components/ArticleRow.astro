@@ -1,0 +1,11 @@
+---
+import { type Article, type Author, topics, readingTime } from '../lib/catalog';
+interface Props { article: Article; authorMap: Map<string, Author>; prominent?: boolean }
+const { article, authorMap, prominent = false } = Astro.props;
+---
+<article class:list={['article-row', { prominent }]}>
+  <p class="eyebrow">{article.data.topics.map(t => topics[t as keyof typeof topics]).join(' / ')}{article.data.edition === 'excerpt' && ' · گزیده'}</p>
+  <h2><a href={`/articles/${article.id}/`}>{article.data.title}</a></h2>
+  <p class="article-description">{article.data.description}</p>
+  <p class="byline">{article.data.authors.map((id, i) => <><a href={`/authors/${id}/`}>{authorMap.get(id)!.data.name}</a>{i < article.data.authors.length - 1 && '، '}</>)}<span aria-hidden="true"> · </span><span>{readingTime(article.body)} دقیقه خواندن</span></p>
+</article>

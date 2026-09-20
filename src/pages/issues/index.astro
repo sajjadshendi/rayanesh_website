@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCatalog, fa } from '../../lib/catalog';
+const { issues } = await getCatalog();
+---
+<Base title="آرشیو شماره‌ها" description="شماره‌ها و ویژه‌نامه‌های رایانش، همراه با جلد، فهرست و نسخهٔ PDF."><div class="shell page"><Breadcrumb items={[{ label: 'آرشیو شماره‌ها' }]} /><header class="page-heading"><p class="eyebrow">یک قفسه، چندین قصه</p><h1>شماره‌های رایانش</h1><p>{fa(issues.length)} شماره و ویژه‌نامه در این آرشیو در دسترس است.</p></header><nav class="topic-nav" aria-label="بخش‌های آرشیو"><a href="#regular">شماره‌های نشریه</a><a href="#special">ویژه‌نامه‌ها</a></nav><section id="regular" class="archive-section"><h2 class="section-title">شماره‌های نشریه</h2><div class="issue-grid">{issues.filter(i => i.data.kind === 'regular').map(issue => <IssueCard issue={issue} />)}</div></section><section id="special" class="archive-section"><h2 class="section-title">ویژه‌نامه‌ها</h2><div class="issue-grid">{issues.filter(i => i.data.kind === 'special').map(issue => <IssueCard issue={issue} />)}</div></section></div></Base>

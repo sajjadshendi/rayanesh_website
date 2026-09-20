@@ -1,0 +1,9 @@
+---
+import { type Issue, issueLabel } from '../lib/catalog';
+interface Props { issue: Issue }
+const { issue } = Astro.props;
+---
+<article class="issue-card">
+  <a class="cover-frame" href={`/issues/${issue.id}/`} tabindex="-1" aria-hidden="true"><img src={issue.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" /></a>
+  <div class="issue-card-meta"><p class="eyebrow">{issueLabel(issue)}{issue.data.dateLabel && ` · ${issue.data.dateLabel}`}</p><h2><a href={`/issues/${issue.id}/`}>{issue.data.title}</a></h2></div>
+</article>

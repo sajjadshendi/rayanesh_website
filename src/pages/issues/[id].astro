@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCatalog, issueLabel, fileSize, fa } from '../../lib/catalog';
+export async function getStaticPaths() { const { issues } = await getCatalog(); return issues.map(issue => ({ params: { id: issue.id }, props: { issue } })); }
+const { issue } = Astro.props;
+const { articles, authorMap } = await getCatalog();
+const online = articles.filter(a => a.data.issue === issue.id).sort((a,b) => a.data.order - b.data.order);
+---
+<Base title={`${issueLabel(issue)}؛ ${issue.data.title}`} description={issue.data.description} image={issue.data.cover}>
+  <div class="shell page"><Breadcrumb items={[{ href: '/issues/', label: 'شماره‌ها' }, { label: issue.data.title }]} />
+    <div class="issue-detail"><figure class="issue-cover"><img src={issue.data.cover} alt={issue.data.coverAlt} width="750" height="1060" fetchpriority="high" /></figure><div class="issue-detail-copy"><p class="eyebrow">{issueLabel(issue)}{issue.data.dateLabel && ` · ${issue.data.dateLabel}`}</p><h1>{issue.data.title}</h1><p class="deck">{issue.data.description}</p><a class="button" href={issue.data.pdf}>خواندن نسخهٔ PDF <span aria-hidden="true">↗</span></a><p class="muted small">{fileSize(issue.data.pdfBytes)} · {fa(issue.data.pdfPages)} صفحهٔ PDF</p><p class="muted small">بعضی نسخه‌ها به صورت صفحات روبه‌رو منتشر شده‌اند؛ شمارهٔ صفحهٔ PDF با صفحهٔ چاپی متفاوت است.</p>
+    {issue.data.credits.length > 0 && <details class="credits"><summary>شناسنامهٔ این شماره</summary><dl>{issue.data.credits.map(credit => <div><dt>{credit.role}</dt><dd>{credit.names.join('، ')}</dd></div>)}</dl></details>}</div></div>
+    <section class="issue-toc"><div class="section-heading"><h2>{issue.data.tocLabel}</h2><span class="muted small">وب و نسخهٔ چاپی</span></div>{issue.data.toc.length ? <ol class="contents-list">{issue.data.toc.map((entry, index) => <li><span class="index-number" aria-hidden="true">{fa(index + 1)}</span><div><h3><a href={entry.article ? `/articles/${entry.article}/` : `${issue.data.pdf}#page=${entry.pdfPage}`}>{entry.title}</a></h3><p class="small muted">{entry.article ? 'خواندن در سایت' : `نسخهٔ PDF · صفحهٔ ${fa(entry.pdfPage)}`}</p></div><a class="toc-action" href={`${issue.data.pdf}#page=${entry.pdfPage}`} aria-label={`دیدن «${entry.title}» در PDF`}>PDF ↗</a></li>)}</ol> : <p class="empty-state">فهرست و نوشته‌های این شماره در نسخهٔ PDF در دسترس‌اند.</p>}</section>
+    {online.some(a => !issue.data.toc.some(t => t.article === a.id)) && <section><h2 class="section-title">نوشته‌های این شماره در سایت</h2><ul class="plain-links">{online.filter(a => !issue.data.toc.some(t => t.article === a.id)).map(a => <li><a href={`/articles/${a.id}/`}>{a.data.title}</a><span class="muted"> — {a.data.authors.map(id => authorMap.get(id)!.data.name).join('، ')}</span></li>)}</ul></section>}
+  </div>
+</Base>

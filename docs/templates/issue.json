@@ -1,0 +1,16 @@
+{
+  "title": "عنوان شماره",
+  "number": 21,
+  "kind": "regular",
+  "order": 210,
+  "dateLabel": "ماه و سال انتشار",
+  "description": "معرفی کوتاه این شماره.",
+  "cover": "/covers/21.webp",
+  "coverAlt": "توصیف تصویر جلد شمارهٔ بیست‌ویکم",
+  "pdf": "/downloads/rayanesh-21.pdf",
+  "pdfPages": 1,
+  "pdfBytes": 1,
+  "draft": true,
+  "toc": [],
+  "credits": []
+}

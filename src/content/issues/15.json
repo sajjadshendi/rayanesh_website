@@ -1,0 +1,14 @@
+{
+  "title": "شمارهٔ پانزدهم",
+  "number": 15,
+  "kind": "regular",
+  "order": 150,
+  "dateLabel": "فروردین ۱۴۰۱",
+  "description": "مجموعه‌ای از نوشته‌های فرهنگی، دانشجویی و علمی در شمارهٔ پانزدهم رایانش.",
+  "cover": "/covers/15.webp",
+  "coverAlt": "جلد شمارهٔ پانزدهم رایانش",
+  "pdf": "/downloads/rayanesh-15.pdf",
+  "pdfPages": 42,
+  "pdfBytes": 8033582,
+  "draft": false
+}

@@ -1,0 +1,64 @@
+{
+  "title": "تردید",
+  "number": 18,
+  "kind": "regular",
+  "order": 180,
+  "description": "از پرسش‌های شخصی و تردیدهای مسیر زندگی تا الگوریتم‌ها، شبکه‌ها، سینما و ادبیات.",
+  "toc": [
+    {
+      "title": "الگوریتم‌ها قاطی شبکه‌ها",
+      "pdfPage": 3,
+      "article": "algorithms-and-networks"
+    },
+    {
+      "title": "خونین‌جگرم بیت‌به‌بیت عشق تو سر داد",
+      "pdfPage": 5
+    },
+    {
+      "title": "حذف تردید یا کنار آمدن با آن",
+      "pdfPage": 9
+    },
+    {
+      "title": "تردیدها، تهدید یا فرصت",
+      "pdfPage": 11
+    },
+    {
+      "title": "شک می‌کنم پس هستم",
+      "pdfPage": 13
+    },
+    {
+      "title": "جهان درون",
+      "pdfPage": 20
+    },
+    {
+      "title": "ذی‌نفع سوم",
+      "pdfPage": 22
+    }
+  ],
+  "credits": [
+    {
+      "role": "سردبیر",
+      "names": [
+        "رایا رضایی"
+      ]
+    },
+    {
+      "role": "مدیرمسئول",
+      "names": [
+        "مهرآذین ملک‌قاسمی"
+      ]
+    },
+    {
+      "role": "طرح جلد",
+      "names": [
+        "دیبا هادی"
+      ]
+    }
+  ],
+  "cover": "/covers/18.webp",
+  "coverAlt": "جلد تردید رایانش",
+  "pdf": "/downloads/rayanesh-18.pdf",
+  "pdfPages": 24,
+  "pdfBytes": 2608011,
+  "draft": false
+}

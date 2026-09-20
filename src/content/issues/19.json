@@ -1,0 +1,24 @@
+{
+  "title": "شمارهٔ نوزدهم",
+  "number": 19,
+  "kind": "regular",
+  "order": 190,
+  "description": "از میراث سبز زندگی و شروعی برای دنیای کار تا عکس‌های برگزیده، ادبیات و سرگرمی.",
+  "tocLabel": "راهنمای این شماره",
+  "toc": [
+    {
+      "title": "فهرست کامل نوشته‌ها",
+      "pdfPage": 3
+    },
+    {
+      "title": "شناسنامهٔ شماره",
+      "pdfPage": 2
+    }
+  ],
+  "cover": "/covers/19.webp",
+  "coverAlt": "جلد شمارهٔ نوزدهم رایانش",
+  "pdf": "/downloads/rayanesh-19.pdf",
+  "pdfPages": 28,
+  "pdfBytes": 17149936,
+  "draft": false
+}

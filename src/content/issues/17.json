@@ -1,0 +1,46 @@
+{
+  "title": "شمارهٔ هفدهم",
+  "number": 17,
+  "kind": "regular",
+  "order": 170,
+  "description": "شمارهٔ هفدهم؛ آموزش در دانشکده، بهای دانشجو شدن و گوشه‌هایی از شعر، سینما و موسیقی.",
+  "tocLabel": "نوشته‌های منتخب",
+  "toc": [
+    {
+      "title": "سلام رفیق!",
+      "pdfPage": 3,
+      "article": "salam-rafigh"
+    },
+    {
+      "title": "آموزش در دانشکدهٔ کامپیوتر؛ انتقادات یک پیرمرد",
+      "pdfPage": 4,
+      "article": "education-at-ce"
+    }
+  ],
+  "credits": [
+    {
+      "role": "سردبیر",
+      "names": [
+        "رایا رضایی"
+      ]
+    },
+    {
+      "role": "مدیرمسئول",
+      "names": [
+        "آیلین رسته"
+      ]
+    },
+    {
+      "role": "طراح جلد",
+      "names": [
+        "پارسا ملکیان"
+      ]
+    }
+  ],
+  "cover": "/covers/17.webp",
+  "coverAlt": "جلد میان درس و زندگی رایانش",
+  "pdf": "/downloads/rayanesh-17.pdf",
+  "pdfPages": 24,
+  "pdfBytes": 1956967,
+  "draft": false
+}

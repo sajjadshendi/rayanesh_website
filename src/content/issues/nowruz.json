@@ -1,0 +1,45 @@
+{
+  "title": "ویژه‌نامهٔ نوروز ۱۴۰۳",
+  "kind": "special",
+  "order": 175,
+  "dateLabel": "نوروز ۱۴۰۳",
+  "description": "ویژه‌نامهٔ سال نو؛ از بهار، امید و قشنگی‌هایی که گاهی کمتر می‌بینیم.",
+  "tocLabel": "از این ویژه‌نامه",
+  "toc": [
+    {
+      "title": "بهار مبارک",
+      "pdfPage": 3,
+      "article": "spring-editorial"
+    },
+    {
+      "title": "قاصدک‌های کوچیک",
+      "pdfPage": 4
+    }
+  ],
+  "credits": [
+    {
+      "role": "سردبیر",
+      "names": [
+        "رایا رضایی"
+      ]
+    },
+    {
+      "role": "مدیرمسئول",
+      "names": [
+        "آیلین رسته"
+      ]
+    },
+    {
+      "role": "صفحه‌آرایی و گرافیک",
+      "names": [
+        "دیبا هادی"
+      ]
+    }
+  ],
+  "cover": "/covers/nowruz.webp",
+  "coverAlt": "جلد بهار؛ شروع دوباره رایانش",
+  "pdf": "/downloads/rayanesh-nowruz.pdf",
+  "pdfPages": 12,
+  "pdfBytes": 1861744,
+  "draft": false
+}

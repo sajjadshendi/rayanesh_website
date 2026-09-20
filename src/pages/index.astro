@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleRow from '../components/ArticleRow.astro';
+import IssueCard from '../components/IssueCard.astro';
+import { site, getCatalog, fa, issueLabel } from '../lib/catalog';
+const { articleMap, issueMap, issues, authorMap, authors, articles } = await getCatalog();
+const issue = issueMap.get(site.featuredIssue)!;
+const selected = site.featuredArticles.map(id => articleMap.get(id)!);
+---
+<Base>
+  <section class="opening shell" aria-labelledby="opening-title">
+    <div class="opening-copy">
+      <p class="eyebrow">پروندهٔ {issueLabel(issue)} · {issue.data.title}</p>
+      <h1 id="opening-title">{site.heroTitle}</h1>
+      <p class="deck">{site.heroDescription}</p>
+      <a class="button" href={`/issues/${issue.id}/`}>ورق زدن این شماره <span aria-hidden="true">←</span></a>
+      <a class="text-link" href={issue.data.pdf}>دریافت نسخهٔ PDF</a>
+    </div>
+    <figure class="opening-art"><img src={site.heroImage} alt={site.heroImageAlt} width="604" height="856" fetchpriority="high" decoding="async" /><figcaption>{site.heroImageCredit}</figcaption></figure>
+    <aside class="opening-index" aria-label="نگاهی به این شماره"><p class="eyebrow">از این شماره بخوانید</p><ol>{issue.data.toc.slice(0, 3).map((item, index) => <li><span class="index-number" aria-hidden="true">{fa(index + 1).padStart(2, '۰')}</span><a href={item.article ? `/articles/${item.article}/` : `${issue.data.pdf}#page=${item.pdfPage}`}>{item.title}{!item.article && <small>در نسخهٔ PDF</small>}</a></li>)}</ol><p class="margin-note">روایت‌هایی از زندگی،<br />میان سطرهای یک مجله.</p></aside>
+  </section>
+  <section class="selection shell" aria-labelledby="selected-heading">
+    <div class="section-heading"><h2 id="selected-heading">برای مکث و خواندن</h2><a class="text-link" href="/articles/">همهٔ نوشته‌ها <span aria-hidden="true">←</span></a></div>
+    <div class="selected-grid">{selected.map((article, i) => <div class:list={['selected-item', { 'with-image': Boolean(article.data.image), 'lead-selection': i === 0 }]}>{article.data.image && <a href={`/articles/${article.id}/`} tabindex="-1" aria-hidden="true"><img class="selection-image" src={article.data.image} alt="" width="798" height="665" loading="lazy" /></a>}<ArticleRow article={article} authorMap={authorMap} prominent={i === 0} /></div>)}</div>
+  </section>
+  <section class="archive-strip shell" aria-labelledby="archive-heading"><div class="section-heading"><h2 id="archive-heading">هر شماره، یک جهان</h2><a class="text-link" href="/issues/">آرشیو شماره‌ها <span aria-hidden="true">←</span></a></div><div class="issue-grid">{issues.filter(i => i.data.kind === 'regular').slice(0, 4).map(issue => <IssueCard issue={issue} />)}</div></section>
+  <section class="people-strip shell" aria-labelledby="people-heading"><div><p class="eyebrow">آدم‌های پشت کلمه‌ها</p><h2 id="people-heading">رایانش، به روایت ما</h2><p>هر نوشته با یک نگاه آغاز می‌شود. از صفحهٔ نویسنده‌ها، مسیر نوشته‌هایشان را دنبال کنید.</p></div><ul>{authors.filter(a => articles.some(p => p.data.authors.includes(a.id))).slice(0, 6).map(a => <li><a href={`/authors/${a.id}/`}>{a.data.name}<span aria-hidden="true">↗</span></a></li>)}</ul></section>
+</Base>

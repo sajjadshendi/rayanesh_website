@@ -1,0 +1,12 @@
+{
+  "title": "گنجه",
+  "kind": "special",
+  "order": 145,
+  "description": "خاطره‌ها و روایت‌هایی از آدم‌های رایانش و سال‌های دانشکده.",
+  "cover": "/covers/ganjeh.webp",
+  "coverAlt": "جلد گنجه رایانش",
+  "pdf": "/downloads/rayanesh-ganjeh.pdf",
+  "pdfPages": 16,
+  "pdfBytes": 2907209,
+  "draft": false
+}
