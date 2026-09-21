@@ -1,60 +1,29 @@
-# امنیت و نگهداری رایانش
+# Security
 
-این سایت خروجی استاتیک دارد. حساب کاربری بازدیدکننده، دیتابیس، اجرای کد مقاله روی سرور، API عمومی و فرم دریافت اطلاعات در آن وجود ندارد. سطح حمله کوچک‌تر شده است؛ امنیت همچنان به کد ساخت، وابستگی‌ها، حساب‌های GitHub/Cloudflare و فایل‌های منتشرشده بستگی دارد.
+## Reporting a vulnerability
 
-## کنترل‌های پیاده‌شده
+Report security issues privately to the repository owner through an established private contact channel. If GitHub private vulnerability reporting is available for this repository, use it. Do not post credentials, personal data or exploitable details in public issues.
 
-- خروجی Astro از نوع `static` است. build وجود `_worker.js` یا Functions در خروجی را خطا می‌داند.
-- محتوای تحریریه Markdown ساده است. HTML خام و MDX پذیرفته نمی‌شوند؛ لینک‌های فعال مانند `javascript:` و تصویر بیرونی رد می‌شوند. متن جست‌وجو با `textContent` ساخته می‌شود، نه `innerHTML`.
-- KaTeX با `trust: false` اجرا می‌شود. فرمول و برجسته‌سازی کد در زمان ساخت تولید می‌شوند.
-- داده‌ها schema مشخص دارند؛ فیلد ناشناخته، مرجع شکسته، مقالهٔ بدون نویسنده، صفحهٔ PDF نامعتبر و انتخاب پیش‌نویس در صفحهٔ نخست خطا می‌شوند.
-- مقالهٔ `draft` صفحه و مدخل جست‌وجو/RSS ندارد. شمارهٔ پیش‌نویس نیز از صفحه‌های عمومی حذف می‌شود. دارایی‌های `public` همیشه عمومی‌اند.
-- اسکریپت و فونت شخص ثالث در مرورگر بارگیری نمی‌شود. فونت‌ها با وابستگی قفل‌شده همراه build منتشر می‌شوند.
-- `_headers` شامل CSP، جلوگیری از MIME sniffing، جلوگیری از نمایش در frame، محدودیت قابلیت‌های مرورگر و سیاست referrer است.
-- CSP اسکریپت را به `'self'` محدود می‌کند؛ `unsafe-eval` و `unsafe-inline` برای اسکریپت مجاز نیست. `style-src 'unsafe-inline'` فقط برای سبک‌های محاسباتی KaTeX، رنگ‌بندی کد و اندازهٔ انتخابی متن لازم است. این استثنا نباید به `script-src` منتقل شود.
-- بررسی ساخت، لینک‌های محلی، تکرار ID، تصویر بدون alt، اسکریپت inline و اندازهٔ دارایی‌ها را کنترل می‌کند. این بررسی اسکن ضدبدافزار PDF نیست.
-- `npm ci` و lockfile، نصب را قابل تکرار می‌کنند. Actions با SHA مشخص، مجوز `contents: read`، عدم ذخیرهٔ credential و محدودیت زمان اجرا تنظیم شده‌اند. از `pull_request_target` برای اجرای کد مشارکت‌کنندگان استفاده نشده است.
-- Dependabot و `npm audit --audit-level=high` برای پیگیری وابستگی‌ها تنظیم شده‌اند. امن بودن نتیجهٔ audit در یک تاریخ، تضمین نبودن آسیب‌پذیری ناشناخته نیست.
+Include the affected revision, reproduction steps, impact and a suggested fix when available. No response-time commitment or separate release support policy is currently defined.
 
-## راه‌اندازی حساب‌ها و انتشار
+## Security boundaries
 
-۱. روی GitHub و Cloudflare احراز هویت دومرحله‌ای، ترجیحاً passkey یا کلید امنیتی، فعال کنید و کدهای بازیابی را خارج از مخزن نگه دارید.
-۲. دسترسی برنامهٔ Cloudflare را فقط به مخزن موردنیاز بدهید. اعضای تحریریه برای ویرایش محتوا به Admin حساب Cloudflare نیاز ندارند. خروج همکار از تیم را با حذف دسترسی همراه کنید.
-۳. تغییرهای `main` را از Pull Request عبور دهید. در صورت وجود این قابلیت در طرح GitHub، بررسی `validate` و بازبینی را برای ادغام اجباری کنید. حفاظت حساب و review، جایگزین اعتبارسنجی برنامه نیستند.
-۴. برای روش Git Integration این پروژه، هیچ Cloudflare API token در GitHub Secrets لازم نیست. اگر در آینده روش انتشار تغییر کرد، توکن کم‌اختیار و محدود به کار لازم بسازید؛ آن را در فایل، مقاله، دستور ثبت‌شده یا `PUBLIC_*` قرار ندهید.
-۵. `SITE_URL` محرمانه نیست؛ یک نشانی عمومی است. هر مقدار واردشده در فرانت‌اند یا خروجی build را قابل مشاهده فرض کنید. `.env` توسط Git نادیده گرفته می‌شود، اما این به‌تنهایی مانع نشت از build یا log نیست.
-۶. دامنه را از صفحهٔ Custom domains خود Pages متصل کنید و HTTPS را بررسی کنید. تنظیمات سراسری DNS/ایمیل را برای راه‌اندازی این سایت تغییر ندهید. تا وقتی همهٔ زیردامنه‌ها آماده نیستند، HSTS همراه `includeSubDomains` و preload را نسنجیده فعال نکنید.
+The site generates static output. It has no visitor accounts, database or application server. Security still depends on the build toolchain, repository and hosting accounts, dependencies and published assets.
 
-## پیش‌نمایش و فایل‌های عمومی
+- Editorial Markdown rejects raw HTML, unsafe links and remote images.
+- Content schemas and build checks validate references, assets and draft publication boundaries.
+- KaTeX runs without trusted commands.
+- Security headers are configured in `public/_headers`; verify them on the deployed site because local preview does not apply Cloudflare headers.
+- Fonts are bundled locally. Browser scripts are restricted by the Content Security Policy.
+- Tests and build checks do not replace an independent security review or malware scanning of uploaded PDFs.
 
-خصوصی بودن مخزن به معنی خصوصی بودن سایت Pages یا Preview نیست. Previewها برای موتور جست‌وجو `noindex` می‌گیرند، ولی هر کس نشانی را داشته باشد ممکن است آن‌ها را ببیند. برای محتوای حساس، انتشار Preview را محدود کنید یا آن را با Cloudflare Access محافظت کنید. [راهنمای Cloudflare](https://developers.cloudflare.com/pages/configuration/preview-deployments/)
+## Maintenance and publishing
 
-چیزی که داخل `public` قرار می‌گیرد بدون نیاز به لینک در دسترس است. اطلاعات شخصی، متن پیش از اجازهٔ انتشار، backup، کلید، log و فایل منبع خصوصی را آنجا نگذارید. برداشتن یک فایل از شاخهٔ تازه، نسخه‌های قبلی deployment و cache را از بین نمی‌برد. برای محتوای محرمانه از ابتدا از مخزن و پوشهٔ انتشار عمومی استفاده نکنید.
+- Use `npm ci`, review dependency updates and run `npm run validate` and `npm audit --audit-level=high`.
+- Protect GitHub and Cloudflare accounts with multi-factor authentication and limit access to required repositories and roles.
+- Review pull requests and successful checks before merging. Pages deployment does not automatically wait for GitHub Actions.
+- Treat every file in `public/` as publicly accessible. Draft flags do not protect assets.
+- Private repository visibility and preview `noindex` directives do not provide access control for deployed sites.
+- Never commit secrets or put them in browser-exposed configuration.
 
-PDF و صوت می‌توانند حاوی محتوای نامناسب یا اطلاعات خصوصی باشند. فایل‌های دریافتی را پیش از کامیت با ابزار معتبر اسکن و بازبینی کنید. بررسی امضای `%PDF-` و حجم، جانشین تحلیل محتوای PDF نیست. فایل ناشناس را در محیط اصلی تیم اجرا نکنید. نقش نویسنده و خوانشگر و مجوز عکس اشخاص را مشخص نگه دارید.
-
-## نگهداری
-
-- PRهای Dependabot را بررسی کنید. با به‌روزرسانی همزمان package و lockfile، `npm run validate` و `npm audit` را اجرا کنید. به‌روزرسانی major نیاز به بررسی تغییرهای سازگاری دارد.
-- برای رفع هشدار، `npm audit fix --force` را بدون فهم تغییر نسخه‌ها اجرا نکنید. اگر موردی به پروژه قابل اعمال نیست، دلیل، نسخه و تاریخ بازبینی آن را ثبت کنید؛ check را صرفاً حذف نکنید.
-- دوره‌ای اعضا، برنامه‌های متصل، دسترسی Preview و مصرف build را بازبینی کنید. نسخهٔ اصلی محتوای نشریه و clone مخزن را در آرشیو تیم نگه دارید.
-- برای اضافه کردن analytics، embed، CMS، کامنت یا فرم، ابتدا جریان داده، هزینه و دامنه‌های CSP را بررسی و سیاست حریم خصوصی را به‌روز کنید. wildcard برای خاموش کردن خطای CSP اضافه نکنید. در حالت فعلی Rocket Loader، Zaraz و تزریق ابزارهای آماری لازم نیستند.
-- هدرهای امنیتی را روی **نسخهٔ منتشرشده** بررسی کنید. `astro preview` فایل `_headers` کلادفلر را اجرا نمی‌کند. وجود فایل در `dist` به معنی مشاهدهٔ هدر در پاسخ زنده نیست. [رفتار هدرهای Pages](https://developers.cloudflare.com/pages/configuration/headers/)
-
-نمونهٔ بررسی پاسخ (نشانی واقعی سایت را جایگزین کنید):
-
-```bash
-curl -I https://your-project.pages.dev/
-curl -I https://your-project.pages.dev/articles/algorithms-and-networks/
-curl -I https://your-project.pages.dev/not-a-page/
-```
-
-دو مورد اول باید 200 و مورد آخر 404 داشته باشند. CSP، `X-Content-Type-Options` و `X-Frame-Options` را ببینید. برای endpointهایی که از بیرون اضافه می‌شوند، اعمال شدن همین هدرها را جداگانه بررسی کنید.
-
-## گزارش مشکل و واکنش
-
-مشکل امنیتی را به‌صورت خصوصی با مالک مخزن مطرح کنید؛ exploit قابل سوءاستفاده، توکن و اطلاعات کاربران را در Issue عمومی منتشر نکنید. این مخزن ایمیل امنیتی ساختگی معرفی نمی‌کند؛ تیم باید کانال رسمی خودش را تعیین کند.
-
-اگر یک کلید لو رفت، **ابتدا آن را در سرویس صادرکننده باطل و جایگزین کنید**؛ حذف فایل یا force-push، کلید را بی‌اعتبار نمی‌کند. دسترسی‌ها و لاگ انتشار را بررسی کنید، در صورت لزوم انتشار خودکار را موقتاً متوقف کنید و به نسخهٔ سالم برگردید. برای کد معیوب از revert قابل‌ردگیری استفاده کنید. محتوای حساسِ منتشرشده باید از deploymentهای قبلی و cache نیز مطابق امکانات میزبان حذف شود.
-
-این پروژه آزمون‌های خودکار محتوایی و خروجی دارد؛ آن‌ها جای تست نفوذ مستقل یا بررسی روی همهٔ دستگاه‌ها را نمی‌گیرند.
+If a credential is exposed, revoke or rotate it at its provider first, then review access and deployment logs. Removing a file or rewriting Git history does not invalidate a credential or remove earlier deployments.

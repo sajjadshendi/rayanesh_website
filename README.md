@@ -1,66 +1,77 @@
-# رایانش
+# Rayanesh
 
-وب‌سایت فارسی نشریهٔ علمی و فرهنگی رایانش؛ ساخته‌شده با **Astro، TypeScript و Markdown** و خروجی کاملاً استاتیک برای **Cloudflare Pages**.
+A Persian science and culture magazine website built with Astro, TypeScript and Markdown. It generates a static site for Cloudflare Pages.
 
-## شروع انتشار
+## Features
 
-در Cloudflare یک پروژهٔ **Pages** از مخزن `sajjadshendi/rayanesh_website` بسازید:
+- Responsive right-to-left layouts and locally bundled fonts
+- Magazine issues, PDF archives, articles, authors and topic pages
+- Client-side Persian search, dark mode and reading controls
+- Math, code blocks, tables, footnotes and optional audio
+- RSS, sitemap and build-time content validation
 
-| تنظیم | مقدار |
-|---|---|
-| Production branch | `main` |
-| Framework preset | `Astro` |
-| Build command | `npm ci && npm run build` |
-| Build output directory | `dist` |
-| Root directory | خالی؛ ریشهٔ مخزن |
-| `NODE_VERSION` | `24.19.0` |
-| `SKIP_DEPENDENCY_INSTALL` | `1` |
-| `SITE_URL` | نشانی واقعی سایت، مانند `https://your-project.pages.dev` |
-| `ASTRO_TELEMETRY_DISABLED` | `1` |
+Content is maintained in the repository. There is no application server, database or public administration panel.
 
-**صفحه‌ای که `Deploy command: npx wrangler deploy` و `Version command` دارد، مربوط به Workers است.** برای این پروژه مسیر Pages را انتخاب کنید؛ دستور Deploy یا فایل Wrangler لازم نیست. تنظیمات کامل، دامنه و رفع خطا: [DEPLOYMENT_FA.md](docs/DEPLOYMENT_FA.md).
+## Quick start
 
-## راهنماها
+Use the Node.js version in [.node-version](.node-version).
 
-- [انتقال بستهٔ آماده به GitHub، بدون تکرار پیاده‌سازی](docs/UPLOAD_FA.md)
-
-- [راه‌اندازی Cloudflare Pages، دامنه، انتشار خودکار و رفع خطا](docs/DEPLOYMENT_FA.md)
-- [افزودن و ویرایش نوشته، نویسنده، شماره، PDF، صوت و صفحهٔ نخست](docs/CONTENT_FA.md)
-- [امنیت کد، حساب‌ها، انتشار و نگهداری](SECURITY.md)
-- [ساختار فنی و تصمیم‌های طراحی](docs/ARCHITECTURE_FA.md)
-- [منبع محتوای اولیه و وضعیت انتقال آرشیو](docs/CONTENT_SOURCES_FA.md)
-- [اعتبار و مجوز وابستگی‌ها](THIRD_PARTY_NOTICES.md)
-
-## اجرای محلی
-
-Node مطابق `.node-version` و Git را نصب کنید. در ترمینال:
-
-```bash
+```sh
 git clone https://github.com/sajjadshendi/rayanesh_website.git
 cd rayanesh_website
 npm ci
 npm run dev
 ```
 
-نشانی محلی: `http://localhost:4321`. برای بررسی نسخهٔ نهایی:
+The development server is available at `http://localhost:4321`.
 
-```bash
-npm run validate
-npm run preview
-```
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm test` | Run content and security boundary tests |
+| `npm run check` | Validate content and check types |
+| `npm run build` | Check, build and verify the static output |
+| `npm run validate` | Run tests and the complete build |
+| `npm run preview` | Preview a completed build |
 
-برای این کار به رمز Cloudflare، API Token یا فایل `.env` نیاز نیست. اگر `SITE_URL` تنظیم نشده باشد، نسخهٔ محلی `noindex` است و canonical ندارد. تنظیم دامنه در محیط ساخت انجام می‌شود.
+## Project structure
 
-## امکانات این نسخه
+| Path | Contents |
+| --- | --- |
+| `src/content/` | Articles, authors and magazine issues |
+| `src/data/site.json` | Homepage selections and site metadata |
+| `src/pages/`, `src/layouts/`, `src/components/` | Astro pages and shared UI |
+| `src/styles/`, `src/scripts/` | Styles and browser behavior |
+| `public/` | Published images, PDFs, audio and security headers |
+| `scripts/`, `tests/` | Content tools and validation |
+| `docs/templates/` | Templates required by the content creation tool |
 
-طراحی راست‌به‌چپ و واکنش‌گرا، آرشیو PDF و جلدها، فهرست هر شماره، صفحهٔ مقاله و نویسنده، موضوع‌ها، جست‌وجوی فارسی در مرورگر، حالت روشن/تیره، اندازهٔ متن، هم‌رسانی، فرمول، کد، جدول، پانویس، شعر، صوت اختیاری، RSS و sitemap.
+## Deployment
 
-۱۰ فایل شماره و ویژه‌نامه در آرشیو قرار گرفته‌اند. پنج نوشته و چهار نویسنده برای شروع به وب منتقل شده‌اند؛ چهار نوشته متن کامل و یک نوشته گزیده است. همهٔ مقاله‌های همهٔ PDFها هنوز به متن وب تبدیل نشده‌اند. ادامهٔ ورود محتوا از طریق راهنمای تحریریه انجام می‌شود.
+Use the Cloudflare **Pages** Git integration with these project settings:
 
-سرور برنامه، پایگاه داده، پنل ورود عمومی، Functions و درخواست به مدل هوش مصنوعی در زمان اجرای سایت وجود ندارد. مدیریت انتشار از GitHub انجام می‌شود.
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Framework preset | `Astro` |
+| Build command | `npm ci && npm run build` |
+| Output directory | `dist` |
+| Root directory | Repository root |
+| `NODE_VERSION` | Match `.node-version` |
+| `SKIP_DEPENDENCY_INSTALL` | `1` |
+| `ASTRO_TELEMETRY_DISABLED` | `1` |
+| `SITE_URL` | The production HTTPS origin, with no path, query or fragment |
 
-## انتشار خودکار و کیفیت
+Install development dependencies during the build; they include required validation tools. Set the final production origin explicitly for canonical URLs and feeds. The configuration falls back to `CF_PAGES_URL` when available.
 
-Cloudflare Git Integration پس از هر تغییر `main` می‌سازد و منتشر می‌کند. workflow `Validate magazine` در GitHub Actions آزمون امنیت محتوای Markdown و جست‌وجو، صحت داده‌ها، TypeScript، build، لینک‌های داخلی، عدم انتشار draft و محدودیت فایل‌های Pages را بررسی می‌کند. Dependabot پیشنهادهای به‌روزرسانی می‌سازد؛ ادغام خودکار فعال نشده است.
+This project uses Pages static hosting and does not require a Worker deployment command or Cloudflare API tokens in GitHub.
 
-**CI گیت‌هاب به‌تنهایی جلوی انتشار Cloudflare را نمی‌گیرد.** برای الزام گذراندن CI پیش از انتشار، تغییرها را در Pull Request بررسی و در صورت پشتیبانی طرح GitHub، بررسی `validate` را برای `main` اجباری کنید. خود فرمان `npm run build` نیز اعتبارسنجی داده‌ها و خروجی را انجام می‌دهد.
+The `Validate magazine` workflow runs tests, builds the site and audits dependencies. Pages Git integration deploys independently of GitHub Actions; review successful checks before merging.
+
+## Contributing and security
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution and content workflow, and [SECURITY.md](SECURITY.md) for security reporting and deployment boundaries.
+
+## Third-party materials
+
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [font licenses](docs/licenses/). No general reuse license is granted for the magazine's editorial texts, PDFs, images or branding.
