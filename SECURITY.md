@@ -2,28 +2,27 @@
 
 ## Reporting a vulnerability
 
-Report security issues privately to the repository owner through an established private contact channel. If GitHub private vulnerability reporting is available for this repository, use it. Do not post credentials, personal data or exploitable details in public issues.
+Report suspected vulnerabilities privately to the repository owner using your established project contact channel. If the repository offers GitHub's **Report a vulnerability** option, you can use that instead. Do not publish credentials, personal data or exploit details in an issue.
 
-Include the affected revision, reproduction steps, impact and a suggested fix when available. No response-time commitment or separate release support policy is currently defined.
+Include the affected commit, reproduction steps and likely impact. Redact sensitive values from logs and screenshots.
 
-## Security boundaries
+## Project boundaries
 
-The site generates static output. It has no visitor accounts, database or application server. Security still depends on the build toolchain, repository and hosting accounts, dependencies and published assets.
+Rayanesh generates static pages. It has no visitor accounts, database or application server. Its security depends on the build toolchain, dependencies, hosting and repository access, and the files approved for publication.
 
-- Editorial Markdown rejects raw HTML, unsafe links and remote images.
+- Markdown processing rejects raw HTML, unsafe links and remote images.
 - Content schemas and build checks validate references, assets and draft publication boundaries.
-- KaTeX runs without trusted commands.
-- Security headers are configured in `public/_headers`; verify them on the deployed site because local preview does not apply Cloudflare headers.
-- Fonts are bundled locally. Browser scripts are restricted by the Content Security Policy.
-- Tests and build checks do not replace an independent security review or malware scanning of uploaded PDFs.
+- KaTeX runs with trusted commands disabled.
+- Response headers are defined in [public/_headers](public/_headers). Verify their behavior on the deployed site; local preview does not apply Cloudflare headers.
+- Build checks do not scan PDFs for malware or constitute a full security audit.
 
-## Maintenance and publishing
+## Publishing and maintenance
 
-- Use `npm ci`, review dependency updates and run `npm run validate` and `npm audit --audit-level=high`.
-- Protect GitHub and Cloudflare accounts with multi-factor authentication and limit access to required repositories and roles.
-- Review pull requests and successful checks before merging. Pages deployment does not automatically wait for GitHub Actions.
-- Treat every file in `public/` as publicly accessible. Draft flags do not protect assets.
-- Private repository visibility and preview `noindex` directives do not provide access control for deployed sites.
-- Never commit secrets or put them in browser-exposed configuration.
+- Treat everything in `public/` as public after deployment, even when its article or issue is a draft.
+- A private repository or a `noindex` directive does not restrict access to deployed pages.
+- Keep secrets out of commits, logs and browser-exposed configuration.
+- Use multi-factor authentication and limit repository and hosting access to the roles needed.
+- Review dependency updates with the lockfile and run `npm run validate` and `npm audit --audit-level=high`.
+- Review successful checks before merging: Pages Git integration deploys independently of GitHub Actions.
 
-If a credential is exposed, revoke or rotate it at its provider first, then review access and deployment logs. Removing a file or rewriting Git history does not invalidate a credential or remove earlier deployments.
+If a credential is exposed, revoke or rotate it at its provider first, then review access and deployment logs. Removing a file does not invalidate credentials or remove earlier deployments.

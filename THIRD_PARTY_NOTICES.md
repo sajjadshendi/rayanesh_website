@@ -1,7 +1,20 @@
 # Third-party notices
 
-Editorial texts, magazine PDFs, covers and the Rayanesh mark are supplied by the project owner; their inclusion does not grant a general reuse license.
+## Editorial materials
 
-The application uses Astro, TypeScript, KaTeX and unified/remark/rehype packages. Exact versions and transitive dependencies are recorded in package-lock.json. Their respective licenses remain applicable; see the installed packages for full notices.
+Magazine articles, PDFs, covers, images and the Rayanesh mark are supplied by the project owner. Their inclusion in this repository does not grant a general reuse license.
 
-Vazirmatn and Noto Naskh Arabic are distributed under the SIL Open Font License 1.1. Copies of the font license texts are included in docs/licenses. Fonts are bundled locally through Fontsource packages.
+## Software dependencies
+
+The project uses Astro, TypeScript, KaTeX and the unified, remark and rehype ecosystems, along with other packages recorded in [package-lock.json](package-lock.json).
+
+Each dependency retains its own license. Consult the installed package's license and notice files when redistributing it.
+
+## Fonts
+
+Fonts are bundled locally through Fontsource packages. The included font license texts are:
+
+| Font | License | Included text |
+| --- | --- | --- |
+| Vazirmatn | SIL Open Font License 1.1 | [vazirmatn-OFL.txt](docs/licenses/vazirmatn-OFL.txt) |
+| Noto Naskh Arabic | SIL Open Font License 1.1 | [noto-naskh-arabic-OFL.txt](docs/licenses/noto-naskh-arabic-OFL.txt) |
