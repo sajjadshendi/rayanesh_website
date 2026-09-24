@@ -44,13 +44,10 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
     <a class="skip-link" href="#main">رفتن به محتوای صفحه</a>
     <header class="masthead" id="masthead">
       <div class="nav-row shell">
-        <div class="brand-cluster">
-          <a class="brand" href="/" aria-label="رایانش، صفحهٔ نخست">
-            <span class="brand-mark" aria-hidden="true"></span>
-            <span class="brand-line" aria-hidden="true">نشریهٔ علمی و فرهنگی دانشکدهٔ مهندسی کامپیوتر شریف</span>
-          </a>
-          <a class="issue-badge" href={`/issues/${currentIssue.id}/`} aria-label={`رفتن به ${issueLabel(currentIssue)}${currentIssue.data.dateLabel ? `، ${currentIssue.data.dateLabel}` : ''}`}>{issueLabel(currentIssue)}{currentIssue.data.dateLabel && ` · ${currentIssue.data.dateLabel}`}</a>
-        </div>
+        <a class="brand" href="/" aria-label="رایانش، صفحهٔ نخست">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-line" aria-hidden="true">نشریهٔ علمی و فرهنگی دانشکدهٔ مهندسی کامپیوتر شریف</span>
+        </a>
         <nav class="site-nav" id="site-nav" aria-label="منوی اصلی">
           {primaryNav.map(item => <a href={item.href} aria-current={isPrimaryCurrent(item) ? 'page' : undefined}>{item.label}</a>)}
         </nav>
@@ -75,8 +72,20 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
           <ul>{nav.map(item => <li><a href={item.href}>{item.label}</a></li>)}</ul>
         </details>
         <details class="footer-col" open>
-          <summary id="footer-follow">همراه رایانش</summary>
-          <ul>{site.contactEmail && <li><a href={`mailto:${site.contactEmail}`}>ارسال نوشته و تماس</a></li>}{Astro.site && <li><a href="/rss.xml">خوراک نوشته‌ها (RSS)</a></li>}<li><a href="/search/">جست‌وجو</a></li><li><a href="/privacy/">حریم خصوصی</a></li></ul>
+          <summary id="footer-follow">ارتباط با رایانش</summary>
+          <ul>
+            <li><a href="mailto:rayanesh@example.com"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></svg>rayanesh@example.com</a></li>
+            <li><a href="/about/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" /></svg>همکاری با نشریه</a></li>
+          </ul>
+        </details>
+        <details class="footer-col" open>
+          <summary id="footer-social">رایانش را در شبکه‌های اجتماعی دنبال کنید:</summary>
+          <ul class="social-list">
+            <li><a href="https://example.com" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 4-9 16-3-7-7-3Z" /><path d="m21 4-10 9" /></svg>تلگرام</a></li>
+            <li><a href="https://example.com" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4" /><circle cx="12" cy="12" r="3.5" /><circle cx="17.4" cy="6.6" r=".8" /></svg>اینستاگرام</a></li>
+            <li><a href="https://example.com" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M8 10v7M8 7.5h.01M12 17v-4.5a2 2 0 1 1 4 0V17" /></svg>لینکدین</a></li>
+            <li><a href="https://example.com" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19" /></svg>ایکس</a></li>
+          </ul>
         </details>
       </div>
       <div class="sub-footer shell"><p>حقوق نوشته‌ها و تصاویر برای پدیدآورندگان و رایانش محفوظ است.</p></div>

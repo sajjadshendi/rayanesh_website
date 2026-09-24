@@ -1,24 +1,24 @@
 ---
 import Avatar from './Avatar.astro';
-import { type Article, type Author, type Issue, topics, readingTime } from '../lib/catalog';
+import { type Article, type Author, type Issue, topics, readingTime, issueLabel } from '../lib/catalog';
 interface Props { article: Article; authorMap: Map<string, Author>; issueMap: Map<string, Issue> }
 const { article, authorMap, issueMap } = Astro.props;
 const href = `/articles/${article.id}/`;
 const issue = issueMap.get(article.data.issue);
 const writers = article.data.authors.map(id => authorMap.get(id)!);
 const first = writers[0];
-const fromIssueCover = !article.data.image && Boolean(issue);
 ---
 <article class="article-card">
   <a class="card-media" href={href} tabindex="-1" aria-hidden="true">
     {article.data.image
       ? <img src={article.data.image} alt="" width="798" height="449" loading="lazy" decoding="async" />
-      : issue && <img src={issue.data.cover} alt="" width="798" height="449" loading="lazy" decoding="async" />}
+      : issue && <img class="card-cover-crop" src={issue.data.cover} alt="" width="798" height="449" loading="lazy" decoding="async" />}
+    {issue && <img class="card-cover-full" src={issue.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" />}
   </a>
   <p class="card-topic">
-    {article.data.topics.map(t => topics[t as keyof typeof topics]).join(' / ')}
+    <span>{article.data.topics.map(t => topics[t as keyof typeof topics]).join(' / ')}</span>
     {article.data.edition === 'excerpt' && <span class="pill">گزیده</span>}
-    {fromIssueCover && <span class="pill">از شمارهٔ مجله</span>}
+    {issue && <span class="card-when">{issueLabel(issue)}{issue.data.dateLabel && <span class="card-date">{issue.data.dateLabel}</span>}</span>}
   </p>
   <h3 class="card-title"><a href={href}>{article.data.title}</a></h3>
   <p class="card-summary">{article.data.description}</p>
