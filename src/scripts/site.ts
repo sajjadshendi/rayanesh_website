@@ -44,3 +44,30 @@ if (masthead && menuToggle) {
     if ((event.target as HTMLElement).closest('a')) setMenu(false);
   });
 }
+
+const archive = document.querySelector<HTMLElement>('[data-archive]');
+if (archive) {
+  const tabs = [...archive.querySelectorAll<HTMLAnchorElement>('[data-archive-tab]')];
+  const panels = [...archive.querySelectorAll<HTMLElement>('[data-archive-panel]')];
+  const show = (id: string) => {
+    tabs.forEach(tab => {
+      if (tab.dataset.archiveTab === id) tab.setAttribute('aria-current', 'page');
+      else tab.removeAttribute('aria-current');
+    });
+    panels.forEach(panel => { panel.hidden = panel.dataset.archivePanel !== id; });
+  };
+  const fromHash = () => location.hash === '#special' ? 'special' : 'regular';
+  show(fromHash());
+  tabs.forEach(tab => tab.addEventListener('click', () => show(tab.dataset.archiveTab ?? 'regular')));
+  addEventListener('hashchange', () => show(fromHash()));
+}
+
+const compactFooter = matchMedia('(max-width: 760px)');
+const footerCols = [...document.querySelectorAll<HTMLDetailsElement>('.footer-col')];
+const syncFooter = () => {
+  footerCols.forEach(col => { col.open = !compactFooter.matches; });
+};
+if (footerCols.length) {
+  syncFooter();
+  compactFooter.addEventListener('change', syncFooter);
+}

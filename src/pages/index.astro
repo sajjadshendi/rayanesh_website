@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import IssueCard from '../components/IssueCard.astro';
 import AuthorCard from '../components/AuthorCard.astro';
+import Arrow from '../components/Arrow.astro';
 import { site, getCatalog, fa, issueLabel } from '../lib/catalog';
 const { articleMap, issueMap, issues, authorMap, authors, articles } = await getCatalog();
 const issue = issueMap.get(site.featuredIssue)!;
@@ -17,7 +18,7 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 6);
       <h1 id="opening-title">{site.heroTitle}</h1>
       <p class="lead">{site.heroDescription}</p>
       <div class="button-row">
-        <a class="button" href={`/issues/${issue.id}/`}>ورق زدن این شماره <span aria-hidden="true">←</span></a>
+        <a class="button" href={`/issues/${issue.id}/`}>ورق زدن این شماره <Arrow /></a>
         <a class="button button-secondary" href={issue.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>نسخهٔ PDF</a>
       </div>
       <div class="opening-index">
@@ -32,17 +33,17 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 6);
   </section>
 
   <section class="home-section shell" aria-labelledby="selected-heading">
-    <div class="section-heading"><h2 id="selected-heading">برای مکث و خواندن</h2><a class="text-link" href="/articles/">همهٔ نوشته‌ها <span aria-hidden="true">←</span></a></div>
+    <div class="section-heading"><h2 id="selected-heading">برای مکث و خواندن</h2><a class="text-link" href="/articles/">همهٔ نوشته‌ها <Arrow /></a></div>
     <div class="card-grid">{selected.map(article => <ArticleCard article={article} authorMap={authorMap} issueMap={issueMap} />)}</div>
   </section>
 
   <section class="home-section shell" aria-labelledby="archive-heading">
-    <div class="section-heading"><h2 id="archive-heading">هر شماره، یک جهان</h2><a class="text-link" href="/issues/">آرشیو شماره‌ها <span aria-hidden="true">←</span></a></div>
+    <div class="section-heading"><h2 id="archive-heading">هر شماره، یک جهان</h2><a class="text-link" href="/issues/">آرشیو شماره‌ها <Arrow /></a></div>
     <div class="issue-grid issue-grid-scroll">{issues.filter(i => i.data.kind === 'regular').slice(0, 4).map(issue => <IssueCard issue={issue} level={3} />)}</div>
   </section>
 
   <section class="home-section shell" aria-labelledby="people-heading">
-    <div class="section-heading"><h2 id="people-heading">آدم‌های پشت کلمه‌ها</h2><a class="text-link" href="/authors/">همهٔ نویسندگان <span aria-hidden="true">←</span></a></div>
+    <div class="section-heading"><h2 id="people-heading">آدم‌های پشت کلمه‌ها</h2><a class="text-link" href="/authors/">همهٔ نویسندگان <Arrow /></a></div>
     <div class="author-grid">{writers.map(a => <AuthorCard author={a} count={countFor(a.id)} />)}</div>
   </section>
 </Base>

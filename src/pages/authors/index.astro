@@ -2,8 +2,37 @@
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import AuthorCard from '../../components/AuthorCard.astro';
-import { getCatalog } from '../../lib/catalog';
+import { getCatalog, indexLetter } from '../../lib/catalog';
 const { authors, articles } = await getCatalog();
 const countFor = (id: string) => articles.filter(a => a.data.authors.includes(id)).length;
+const writers = authors.filter(a => countFor(a.id) > 0);
+const groups = new Map<string, typeof writers>();
+for (const author of writers) {
+  const letter = indexLetter(author.data.name);
+  const group = groups.get(letter) ?? [];
+  group.push(author);
+  groups.set(letter, group);
+}
+const letters = [...groups.keys()];
 ---
-<Base title="نویسندگان" description="نویسندگان رایانش و نوشته‌هایشان در آرشیو وب."><div class="shell page"><Breadcrumb items={[{ label: 'نویسندگان' }]} /><header class="page-heading"><p class="eyebrow">آدم‌های پشت کلمه‌ها</p><h1>به قلمِ</h1><p>همراهانی که نوشته‌هایشان در این آرشیو منتشر شده است.</p></header><div class="author-grid author-grid-wide">{authors.filter(a => countFor(a.id) > 0).map(author => <AuthorCard author={author} count={countFor(author.id)} level={2} bio />)}</div></div></Base>
+<Base title="نویسندگان" description="نویسندگان رایانش و نوشته‌هایشان در آرشیو وب.">
+  <div class="shell page">
+    <Breadcrumb items={[{ label: 'نویسندگان' }]} />
+    <header class="page-heading">
+      <p class="eyebrow">آدم‌های پشت کلمه‌ها</p>
+      <h1>به قلمِ</h1>
+      <p>همراهانی که نوشته‌هایشان در این آرشیو منتشر شده است.</p>
+    </header>
+    {letters.length > 1 && (
+      <nav class="alpha-nav" aria-label="حروف الفبا">
+        {letters.map(letter => <a href={`#letter-${letter}`}>{letter}</a>)}
+      </nav>
+    )}
+    {[...groups].map(([letter, group]) => (
+      <section class="alpha-group" id={`letter-${letter}`} aria-labelledby={`alpha-${letter}`}>
+        <h2 class="alpha-heading" id={`alpha-${letter}`}>{letter}</h2>
+        <div class="author-grid author-grid-wide">{group.map(author => <AuthorCard author={author} count={countFor(author.id)} level={3} bio />)}</div>
+      </section>
+    ))}
+  </div>
+</Base>
