@@ -6,7 +6,23 @@ import TopicNav from '../../components/TopicNav.astro';
 import { getCatalog, topics, fa } from '../../lib/catalog';
 export function getStaticPaths() { return Object.entries(topics).map(([id, title]) => ({ params: { id }, props: { title } })); }
 const { title } = Astro.props;
-const { articles, authorMap } = await getCatalog();
+const { articles, authorMap, issueMap } = await getCatalog();
 const selected = articles.filter(a => a.data.topics.includes(Astro.params.id as keyof typeof topics));
 ---
-<Base title={title} description={`نوشته‌های رایانش در ${title}`}><div class="shell page"><Breadcrumb items={[{ href: '/articles/', label: 'نوشته‌ها' }, { label: title }]} /><header class="page-heading"><p class="eyebrow">موضوع‌ها</p><h1>{title}</h1>{selected.length > 0 && <p>{fa(selected.length)} نوشته در این موضوع.</p>}</header><TopicNav current={Astro.params.id} /><div class="article-list">{selected.length ? selected.map(article => <ArticleRow article={article} authorMap={authorMap} />) : <p class="empty-state">نوشته‌های این بخش به‌زودی به آرشیو وب اضافه می‌شوند. فعلاً می‌توانید <a href="/issues/">شماره‌های مجله</a> را ورق بزنید.</p>}</div>{selected.length > 0 && <p class="list-end" role="status">پایان فهرست · {fa(selected.length)} نوشته</p>}</div></Base>
+<Base title={title} description={`نوشته‌های رایانش در ${title}`}>
+  <div class="shell page">
+    <Breadcrumb items={[{ href: '/articles/', label: 'نوشته‌ها' }, { label: title }]} />
+    <header class="page-heading">
+      <p class="eyebrow">موضوع‌ها</p>
+      <h1>{title}</h1>
+      {selected.length > 0 && <p>{fa(selected.length)} نوشته در این موضوع.</p>}
+    </header>
+    <TopicNav current={Astro.params.id} />
+    <div class="article-list">
+      {selected.length
+        ? selected.map(article => <ArticleRow article={article} authorMap={authorMap} issueMap={issueMap} />)
+        : <p class="empty-state">نوشته‌های این بخش به‌زودی به آرشیو وب اضافه می‌شوند. فعلاً می‌توانید <a href="/issues/">شماره‌های مجله</a> را ورق بزنید.</p>}
+    </div>
+    {selected.length > 0 && <p class="list-end" role="status">پایان فهرست · {fa(selected.length)} نوشته</p>}
+  </div>
+</Base>

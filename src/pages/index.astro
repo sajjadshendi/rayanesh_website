@@ -19,17 +19,28 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 6);
       <p class="lead">{site.heroDescription}</p>
       <div class="button-row">
         <a class="button" href={`/issues/${issue.id}/`}>ورق زدن این شماره <Arrow /></a>
-        <a class="button button-secondary" href={issue.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>نسخهٔ PDF</a>
-      </div>
-      <div class="opening-index">
-        <h2 id="opening-index-title">از این شماره بخوانید</h2>
-        <ol class="index-cards" aria-labelledby="opening-index-title">{issue.data.toc.slice(0, 3).map((item, index) => <li><a class="index-card" href={item.article ? `/articles/${item.article}/` : `${issue.data.pdf}#page=${item.pdfPage}`}><span class="index-number" aria-hidden="true">{fa(index + 1)}</span><span class="index-text"><span class="index-title">{item.title}</span><small>{item.article ? 'خواندن در سایت' : <>نسخهٔ PDF، صفحهٔ {fa(item.pdfPage)} <span aria-hidden="true">↗</span></>}</small></span></a></li>)}</ol>
+        <a class="button button-ghost" href={issue.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>نسخهٔ PDF</a>
       </div>
     </div>
     <figure class="opening-cover">
       <a href={`/issues/${issue.id}/`} tabindex="-1" aria-hidden="true"><img src={issue.data.cover} alt="" width="750" height="1060" fetchpriority="high" decoding="async" /></a>
       <figcaption><span class="sr-only">{issue.data.coverAlt}. </span>جلد {issueLabel(issue)}{issue.data.dateLabel && `، ${issue.data.dateLabel}`}</figcaption>
     </figure>
+  </section>
+
+  <section class="home-section shell" aria-labelledby="opening-index-title">
+    <div class="section-heading"><h2 id="opening-index-title">از این شماره بخوانید</h2></div>
+    <ol class="index-cards">{issue.data.toc.slice(0, 3).map((item, index) => (
+      <li>
+        <a class="index-card" href={item.article ? `/articles/${item.article}/` : `${issue.data.pdf}#page=${item.pdfPage}`}>
+          <span class="index-number" aria-hidden="true">{fa(index + 1)}</span>
+          <span class="index-text">
+            <span class="index-title">{item.title}</span>
+            <small>{item.article ? 'خواندن در سایت' : <>نسخهٔ PDF، صفحهٔ {fa(item.pdfPage)} <span aria-hidden="true">↗</span></>}</small>
+          </span>
+        </a>
+      </li>
+    ))}</ol>
   </section>
 
   <section class="home-section shell" aria-labelledby="selected-heading">

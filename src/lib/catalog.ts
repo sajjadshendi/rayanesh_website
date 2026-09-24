@@ -8,6 +8,7 @@ export type Article = CollectionEntry<'articles'>;
 export type Author = CollectionEntry<'authors'>;
 export type Issue = CollectionEntry<'issues'>;
 export const fa = (value: number) => value.toLocaleString('fa-IR');
+export const faDigits = (value: string | number) => String(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)] ?? digit);
 export const issueLabel = (issue: Issue) => issue.data.kind === 'regular'
   ? `شمارهٔ ${fa(issue.data.number!)}` : 'ویژه‌نامه';
 export const fileSize = (bytes: number) => `${(bytes / 1048576).toLocaleString('fa-IR', { maximumFractionDigits: 1 })} مگابایت`;
