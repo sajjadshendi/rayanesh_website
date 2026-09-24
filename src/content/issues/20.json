@@ -13,11 +13,13 @@
     },
     {
       "title": "آنجا که باید…",
-      "pdfPage": 4
+      "pdfPage": 4,
+      "article": "anja-ke-bayad"
     },
     {
       "title": "خوانش‌های این شماره",
-      "pdfPage": 2
+      "pdfPage": 2,
+      "article": "khanesh-haye-in-shomare"
     }
   ],
   "credits": [
