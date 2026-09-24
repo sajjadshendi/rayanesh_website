@@ -1,0 +1,14 @@
+---
+import { type Author, fa } from '../lib/catalog';
+interface Props { author: Author; count: number; level?: 2 | 3; bio?: boolean }
+const { author, count, level = 3, bio = false } = Astro.props;
+const Heading = level === 3 ? 'h3' : 'h2';
+---
+<article class:list={['author-card', { 'with-bio': bio }]}>
+  {author.data.avatar ? <img class="avatar" src={author.data.avatar} alt="" width="48" height="48" loading="lazy" /> : <span class="avatar" aria-hidden="true">{author.data.name.slice(0, 1)}</span>}
+  <div class="author-card-body">
+    <Heading class="author-name"><a href={`/authors/${author.id}/`}>{author.data.name}</a></Heading>
+    {bio && <p class="author-bio">{author.data.bio}</p>}
+    <p class="author-count">{fa(count)} نوشته در رایانش</p>
+  </div>
+</article>
