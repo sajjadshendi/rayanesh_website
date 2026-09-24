@@ -1,9 +1,13 @@
 ---
 import { type Author, avatarTone } from '../lib/catalog';
-interface Props { author: Author; size?: 'sm' | 'md' | 'lg' }
-const { author, size = 'sm' } = Astro.props;
-const px = { sm: 32, md: 52, lg: 64 }[size];
+interface Props { author: Author; size?: 'sm' | 'md' | 'lg'; labelled?: boolean }
+const { author, size = 'sm', labelled = false } = Astro.props;
+const px = { sm: 36, md: 48, lg: 64 }[size];
+const initial = author.data.name.trim().slice(0, 1);
+const label = `حرف اول نام ${author.data.name}`;
 ---
 {author.data.avatar
-  ? <img class:list={['avatar', `avatar-${size}`]} src={author.data.avatar} alt="" width={px} height={px} loading="lazy" decoding="async" />
-  : <span class:list={['avatar', `avatar-${size}`]} data-tone={avatarTone(author.data.name)} aria-hidden="true">{author.data.name.trim().slice(0, 1)}</span>}
+  ? <img class:list={['avatar', `avatar-${size}`]} src={author.data.avatar} alt={labelled ? author.data.name : ''} width={px} height={px} loading="lazy" decoding="async" />
+  : labelled
+    ? <span class:list={['avatar', `avatar-${size}`]} data-tone={avatarTone(author.data.name)} role="img" aria-label={label} title={author.data.name}>{initial}</span>
+    : <span class:list={['avatar', `avatar-${size}`]} data-tone={avatarTone(author.data.name)} title={author.data.name} aria-hidden="true">{initial}</span>}

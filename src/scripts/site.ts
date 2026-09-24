@@ -7,6 +7,7 @@ function savedTheme() {
 function updateLabel() {
   const dark = document.documentElement.dataset.theme === 'dark';
   toggle?.setAttribute('aria-label', dark ? 'فعال کردن حالت روشن' : 'فعال کردن حالت تیره');
+  toggle?.setAttribute('aria-pressed', String(dark));
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#191d19' : '#f4f0e7');
 }
 if (toggle) {

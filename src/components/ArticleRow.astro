@@ -1,21 +1,26 @@
 ---
 import Avatar from './Avatar.astro';
-import { type Article, type Author, topics, readingTime } from '../lib/catalog';
-interface Props { article: Article; authorMap: Map<string, Author>; prominent?: boolean; level?: 2 | 3 }
-const { article, authorMap, prominent = false, level = 2 } = Astro.props;
+import { type Article, type Author, type Issue, topics, readingTime } from '../lib/catalog';
+interface Props { article: Article; authorMap: Map<string, Author>; issueMap?: Map<string, Issue>; prominent?: boolean; level?: 2 | 3 }
+const { article, authorMap, issueMap, prominent = false, level = 2 } = Astro.props;
 const Heading = level === 3 ? 'h3' : 'h2';
 const writers = article.data.authors.map(id => authorMap.get(id)!);
 const first = writers[0];
+const href = `/articles/${article.id}/`;
+const thumb = article.data.image || issueMap?.get(article.data.issue)?.data.cover;
 ---
-<article class:list={['article-row', { prominent }]}>
-  <p class="eyebrow">{article.data.topics.map(t => topics[t as keyof typeof topics]).join(' / ')}{article.data.edition === 'excerpt' && ' · گزیده'}</p>
-  <Heading class="article-title"><a href={`/articles/${article.id}/`}>{article.data.title}</a></Heading>
-  <p class="article-description">{article.data.description}</p>
-  <p class="byline">
-    <span class="author-chip">
-      <Avatar author={first} />
-      <span>{writers.map((writer, i) => <><a href={`/authors/${article.data.authors[i]}/`}>{writer.data.name}</a>{i < writers.length - 1 && '، '}</>)}</span>
-    </span>
-    <span class="reading-chip"><svg class="icon icon-clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" /><path d="M12 8.5V12l2.4 1.6" /></svg>{readingTime(article.body)} دقیقه خواندن</span>
-  </p>
+<article class:list={['article-row', { prominent, 'has-media': Boolean(thumb) }]}>
+  {thumb && <a class="article-row-media" href={href} tabindex="-1" aria-hidden="true"><img src={thumb} alt="" width="240" height="180" loading="lazy" decoding="async" /></a>}
+  <div class="article-row-body">
+    <p class="eyebrow">{article.data.topics.map(t => topics[t as keyof typeof topics]).join(' / ')}{article.data.edition === 'excerpt' && ' · گزیده'}</p>
+    <Heading class="article-title"><a href={href}>{article.data.title}</a></Heading>
+    <p class="article-description">{article.data.description}</p>
+    <p class="byline">
+      <span class="author-chip">
+        <Avatar author={first} />
+        <span>{writers.map((writer, i) => <><a href={`/authors/${article.data.authors[i]}/`}>{writer.data.name}</a>{i < writers.length - 1 && '، '}</>)}</span>
+      </span>
+      <span class="reading-chip"><svg class="icon icon-clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" /><path d="M12 8.5V12l2.4 1.6" /></svg>{readingTime(article.body)} دقیقه خواندن</span>
+    </p>
+  </div>
 </article>

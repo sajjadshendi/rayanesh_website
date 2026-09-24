@@ -10,13 +10,14 @@ const special = issues.filter(i => i.data.kind === 'special');
 <Base title="آرشیو شماره‌ها" description="شماره‌ها و ویژه‌نامه‌های رایانش، همراه با جلد، فهرست و نسخهٔ PDF.">
   <div class="shell page">
     <Breadcrumb items={[{ label: 'آرشیو شماره‌ها' }]} />
-    <header class="page-heading">
+    <header class="page-heading page-heading-tight">
       <p class="eyebrow">یک قفسه، چندین قصه</p>
       <h1>شماره‌های رایانش</h1>
       <p>{fa(issues.length)} شماره و ویژه‌نامه در این آرشیو در دسترس است.</p>
     </header>
     <div class="archive" data-archive>
       <nav class="archive-tabs topic-nav" aria-label="بخش‌های آرشیو">
+        <p class="archive-tabs-hint">برای دیدن هر مجموعه، یکی از این دو را انتخاب کنید.</p>
         <div class="topic-nav-track">
           <a class="topic-chip" href="#regular" data-archive-tab="regular">شماره‌های نشریه · {fa(regular.length)}</a>
           <a class="topic-chip" href="#special" data-archive-tab="special">ویژه‌نامه‌ها · {fa(special.length)}</a>
