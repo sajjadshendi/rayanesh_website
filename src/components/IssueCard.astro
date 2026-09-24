@@ -1,9 +1,14 @@
 ---
 import { type Issue, issueLabel } from '../lib/catalog';
-interface Props { issue: Issue }
-const { issue } = Astro.props;
+interface Props { issue: Issue; level?: 2 | 3 }
+const { issue, level = 2 } = Astro.props;
+const Heading = level === 3 ? 'h3' : 'h2';
+const href = `/issues/${issue.id}/`;
 ---
 <article class="issue-card">
-  <a class="cover-frame" href={`/issues/${issue.id}/`} tabindex="-1" aria-hidden="true"><img src={issue.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" /></a>
-  <div class="issue-card-meta"><p class="eyebrow">{issueLabel(issue)}{issue.data.dateLabel && ` · ${issue.data.dateLabel}`}</p><h2><a href={`/issues/${issue.id}/`}>{issue.data.title}</a></h2></div>
+  <div class="cover-frame">
+    <a class="cover-link" href={href} tabindex="-1" aria-hidden="true"><img src={issue.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" /></a>
+    <div class="cover-actions"><a href={href} aria-label={`مشاهدهٔ ${issue.data.title}`}>مشاهده</a><a href={issue.data.pdf} aria-label={`نسخهٔ PDF ${issue.data.title}`}>PDF <span aria-hidden="true">↗</span></a></div>
+  </div>
+  <div class="issue-card-meta"><p class="issue-tags"><span class="pill">{issueLabel(issue)}</span>{issue.data.dateLabel && <span class="issue-date">{issue.data.dateLabel}</span>}</p><Heading class="issue-title"><a href={href}>{issue.data.title}</a></Heading></div>
 </article>
