@@ -4,5 +4,32 @@ import IssueCard from '../../components/IssueCard.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getCatalog, fa } from '../../lib/catalog';
 const { issues } = await getCatalog();
+const regular = issues.filter(i => i.data.kind === 'regular');
+const special = issues.filter(i => i.data.kind === 'special');
 ---
-<Base title="آرشیو شماره‌ها" description="شماره‌ها و ویژه‌نامه‌های رایانش، همراه با جلد، فهرست و نسخهٔ PDF."><div class="shell page"><Breadcrumb items={[{ label: 'آرشیو شماره‌ها' }]} /><header class="page-heading"><p class="eyebrow">یک قفسه، چندین قصه</p><h1>شماره‌های رایانش</h1><p>{fa(issues.length)} شماره و ویژه‌نامه در این آرشیو در دسترس است.</p></header><nav class="topic-nav" aria-label="بخش‌های آرشیو"><a href="#regular">شماره‌های نشریه</a><a href="#special">ویژه‌نامه‌ها</a></nav><section id="regular" class="archive-section"><h2 class="section-title">شماره‌های نشریه</h2><div class="issue-grid">{issues.filter(i => i.data.kind === 'regular').map(issue => <IssueCard issue={issue} level={3} />)}</div></section><section id="special" class="archive-section"><h2 class="section-title">ویژه‌نامه‌ها</h2><div class="issue-grid">{issues.filter(i => i.data.kind === 'special').map(issue => <IssueCard issue={issue} level={3} />)}</div></section></div></Base>
+<Base title="آرشیو شماره‌ها" description="شماره‌ها و ویژه‌نامه‌های رایانش، همراه با جلد، فهرست و نسخهٔ PDF.">
+  <div class="shell page">
+    <Breadcrumb items={[{ label: 'آرشیو شماره‌ها' }]} />
+    <header class="page-heading">
+      <p class="eyebrow">یک قفسه، چندین قصه</p>
+      <h1>شماره‌های رایانش</h1>
+      <p>{fa(issues.length)} شماره و ویژه‌نامه در این آرشیو در دسترس است.</p>
+    </header>
+    <div class="archive" data-archive>
+      <nav class="archive-tabs topic-nav" aria-label="بخش‌های آرشیو">
+        <div class="topic-nav-track">
+          <a class="topic-chip" href="#regular" data-archive-tab="regular">شماره‌های نشریه · {fa(regular.length)}</a>
+          <a class="topic-chip" href="#special" data-archive-tab="special">ویژه‌نامه‌ها · {fa(special.length)}</a>
+        </div>
+      </nav>
+      <section id="regular" class="archive-section" data-archive-panel="regular">
+        <h2 class="section-title">شماره‌های نشریه</h2>
+        <div class="issue-grid">{regular.map(issue => <IssueCard issue={issue} level={3} />)}</div>
+      </section>
+      <section id="special" class="archive-section" data-archive-panel="special">
+        <h2 class="section-title">ویژه‌نامه‌ها</h2>
+        <div class="issue-grid">{special.map(issue => <IssueCard issue={issue} level={3} />)}</div>
+      </section>
+    </div>
+  </div>
+</Base>

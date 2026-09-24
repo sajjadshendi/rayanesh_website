@@ -1,0 +1,6 @@
+---
+/* A "forward" arrow for RTL flow: it points to the inline end (left). Drawn as SVG so bidi mirroring never flips it. */
+interface Props { class?: string }
+const { class: className } = Astro.props;
+---
+<svg class:list={['icon', 'icon-arrow', className]} viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5.5m0 0 6-6m-6 6 6 6" /></svg>

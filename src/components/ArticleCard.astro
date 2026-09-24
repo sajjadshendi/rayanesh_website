@@ -1,4 +1,5 @@
 ---
+import Avatar from './Avatar.astro';
 import { type Article, type Author, type Issue, topics, readingTime } from '../lib/catalog';
 interface Props { article: Article; authorMap: Map<string, Author>; issueMap: Map<string, Issue> }
 const { article, authorMap, issueMap } = Astro.props;
@@ -6,19 +7,26 @@ const href = `/articles/${article.id}/`;
 const issue = issueMap.get(article.data.issue);
 const writers = article.data.authors.map(id => authorMap.get(id)!);
 const first = writers[0];
+const fromIssueCover = !article.data.image && Boolean(issue);
 ---
 <article class="article-card">
-  <a class:list={['card-media', { 'is-cover': !article.data.image }]} href={href} tabindex="-1" aria-hidden="true">
+  <a class="card-media" href={href} tabindex="-1" aria-hidden="true">
     {article.data.image
-      ? <img src={article.data.image} alt="" width="798" height="665" loading="lazy" decoding="async" />
-      : issue && <img src={issue.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" />}
+      ? <img src={article.data.image} alt="" width="798" height="449" loading="lazy" decoding="async" />
+      : issue && <img src={issue.data.cover} alt="" width="798" height="449" loading="lazy" decoding="async" />}
   </a>
-  <p class="card-topic">{article.data.topics.map(t => topics[t as keyof typeof topics]).join(' / ')}{article.data.edition === 'excerpt' && ' · گزیده'}</p>
+  <p class="card-topic">
+    {article.data.topics.map(t => topics[t as keyof typeof topics]).join(' / ')}
+    {article.data.edition === 'excerpt' && <span class="pill">گزیده</span>}
+    {fromIssueCover && <span class="pill">از شمارهٔ مجله</span>}
+  </p>
   <h3 class="card-title"><a href={href}>{article.data.title}</a></h3>
   <p class="card-summary">{article.data.description}</p>
   <p class="card-meta">
-    {first.data.avatar ? <img class="avatar" src={first.data.avatar} alt="" width="28" height="28" loading="lazy" /> : <span class="avatar" aria-hidden="true">{first.data.name.slice(0, 1)}</span>}
-    <span class="card-authors">{writers.map((writer, i) => <><a href={`/authors/${article.data.authors[i]}/`}>{writer.data.name}</a>{i < writers.length - 1 && '، '}</>)}</span>
-    <span class="card-time">{readingTime(article.body)} دقیقه خواندن</span>
+    <span class="author-chip">
+      <Avatar author={first} />
+      <span class="card-authors">{writers.map((writer, i) => <><a href={`/authors/${article.data.authors[i]}/`}>{writer.data.name}</a>{i < writers.length - 1 && '، '}</>)}</span>
+    </span>
+    <span class="card-time"><svg class="icon icon-clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" /><path d="M12 8.5V12l2.4 1.6" /></svg>{readingTime(article.body)} دقیقه خواندن</span>
   </p>
 </article>

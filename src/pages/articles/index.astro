@@ -2,12 +2,16 @@
 import Base from '../../layouts/Base.astro';
 import ArticleRow from '../../components/ArticleRow.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
-import { getCatalog, topics, fa } from '../../lib/catalog';
+import TopicNav from '../../components/TopicNav.astro';
+import { getCatalog, fa } from '../../lib/catalog';
 const { articles, authorMap } = await getCatalog();
 ---
 <Base title="نوشته‌ها" description="روایت‌ها، مقاله‌ها و یادداشت‌های علمی و فرهنگی رایانش.">
   <div class="shell page"><Breadcrumb items={[{ label: 'نوشته‌ها' }]} /><header class="page-heading"><p class="eyebrow">از زندگی تا علم</p><h1>نوشته‌ها</h1><p>هر بار از یک دریچه. {fa(articles.length)} نوشته برای شروع خواندن.</p></header>
-    <nav class="topic-nav" aria-label="مرور موضوع‌ها"><a aria-current="page" href="/articles/">همهٔ نوشته‌ها</a>{Object.entries(topics).map(([id, label]) => <a href={`/topics/${id}/`}>{label}</a>)}</nav>
-    <div class="article-list">{articles.map(article => <ArticleRow article={article} authorMap={authorMap} />)}</div>
+    <TopicNav />
+    {articles.length
+      ? <div class="article-list">{articles.map(article => <ArticleRow article={article} authorMap={authorMap} />)}</div>
+      : <p class="empty-state">هنوز نوشته‌ای در آرشیو وب نیست. می‌توانید <a href="/issues/">شماره‌های مجله</a> را ورق بزنید.</p>}
+    {articles.length > 0 && <p class="list-end" role="status">پایان فهرست · {fa(articles.length)} نوشته در آرشیو وب</p>}
   </div>
 </Base>
