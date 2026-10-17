@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../../lib/paths';
 import { render } from 'astro:content';
 import 'katex/dist/katex.min.css';
 import Base from '../../layouts/Base.astro';
@@ -24,12 +25,12 @@ const next = index >= 0 ? siblings[index + 1] : undefined;
         <h1 itemprop="headline">{article.data.title}</h1>
         <p class="deck" itemprop="description">{article.data.description}</p>
         <div class="reading-meta">
-          <p>{article.data.authors.map((id, i) => <><a href={`/authors/${id}/`} itemprop="author">{authorMap.get(id)!.data.name}</a>{i < article.data.authors.length - 1 && '، '}</>)}</p>
-          <a href={`/issues/${issue.id}/`}>{issue.data.kind === 'regular' ? `${issueLabel(issue)} · ${issue.data.title}` : issueLabel(issue)}</a>
+          <p>{article.data.authors.map((id, i) => <><a href={withBase(`/authors/${id}/`)} itemprop="author">{authorMap.get(id)!.data.name}</a>{i < article.data.authors.length - 1 && '، '}</>)}</p>
+          <a href={withBase(`/issues/${issue.id}/`)}>{issue.data.kind === 'regular' ? `${issueLabel(issue)} · ${issue.data.title}` : issueLabel(issue)}</a>
           {article.data.publishedAt && <time datetime={article.data.publishedAt} itemprop="datePublished">{new Date(article.data.publishedAt).toLocaleDateString('fa-IR', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })}</time>}
         </div>
       </header>
-      {article.data.image && <figure class="article-image"><img src={article.data.image} alt={article.data.imageAlt} width="798" height="665" decoding="async" />{article.data.imageCredit && <figcaption>{article.data.imageCredit}</figcaption>}</figure>}
+      {article.data.image && <figure class="article-image"><img src={withBase(article.data.image)} alt={article.data.imageAlt} width="798" height="665" decoding="async" />{article.data.imageCredit && <figcaption>{article.data.imageCredit}</figcaption>}</figure>}
       <div class="reading-layout">
         <aside class="reading-aside" aria-label="ابزارهای خواندن">
           <div class="reader-controls" id="reader-controls" hidden>
@@ -42,20 +43,20 @@ const next = index >= 0 ? siblings[index + 1] : undefined;
             <details class="reading-toc" open>
               <summary>در این نوشته</summary>
               <nav aria-label="فهرست این نوشته">
-                <ol>{sections.map(h => <li class:list={{ subheading: h.depth === 3 }}><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+                <ol>{sections.map(h => <li class:list={{ subheading: h.depth === 3 }}><a href={withBase(`#${h.slug}`)}>{h.text}</a></li>)}</ol>
               </nav>
             </details>
           )}
-          <a class="source-link" href={`${issue.data.pdf}#page=${article.data.pdfPage}`}>این نوشته در نسخه PDF ↗</a>
+          <a class="source-link" href={withBase(`${issue.data.pdf}#page=${article.data.pdfPage}`)}>این نوشته در نسخه PDF ↗</a>
           <button type="button" id="share-article" class="button button-ghost share-article" hidden>هم‌رسانی نوشته</button>
           <span id="share-status" role="status" class="small"></span>
         </aside>
         <div class="reading-body">
-          {article.data.edition === 'excerpt' && <p class="editorial-note">این صفحه گزیده‌ای از مطلب است. <a href={`${issue.data.pdf}#page=${article.data.pdfPage}`}>متن کامل را در PDF شماره بخوانید.</a></p>}
+          {article.data.edition === 'excerpt' && <p class="editorial-note">این صفحه گزیده‌ای از مطلب است. <a href={withBase(`${issue.data.pdf}#page=${article.data.pdfPage}`)}>متن کامل را در PDF شماره بخوانید.</a></p>}
           {article.data.audio && (
             <figure class="audio-reading">
               <figcaption>خوانش: {article.data.audio.reader}</figcaption>
-              <audio controls preload="none" src={article.data.audio.src}>مرورگر شما پخش صوت را پشتیبانی نمی‌کند. <a href={article.data.audio.src}>دریافت فایل صوتی</a></audio>
+              <audio controls preload="none" src={withBase(article.data.audio.src)}>مرورگر شما پخش صوت را پشتیبانی نمی‌کند. <a href={withBase(article.data.audio.src)}>دریافت فایل صوتی</a></audio>
               <p class="small">متن خوانش در ادامه همین صفحه آمده است.</p>
             </figure>
           )}
@@ -63,13 +64,13 @@ const next = index >= 0 ? siblings[index + 1] : undefined;
           {(previous || next) && (
             <nav class="article-neighbors" aria-label="نوشته قبلی و بعدی">
               {previous && (
-                <a class="article-neighbor article-neighbor-prev" href={`/articles/${previous.id}/`}>
+                <a class="article-neighbor article-neighbor-prev" href={withBase(`/articles/${previous.id}/`)}>
                   <span class="article-neighbor-label">قبلی <Arrow class="icon-arrow-prev" /></span>
                   <strong>{previous.data.title}</strong>
                 </a>
               )}
               {next && (
-                <a class="article-neighbor article-neighbor-next" href={`/articles/${next.id}/`}>
+                <a class="article-neighbor article-neighbor-next" href={withBase(`/articles/${next.id}/`)}>
                   <span class="article-neighbor-label">بعدی <Arrow /></span>
                   <strong>{next.data.title}</strong>
                 </a>

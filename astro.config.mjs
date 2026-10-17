@@ -5,7 +5,7 @@ import rehypeKatex from 'rehype-katex';
 import remarkSafeContent from './src/lib/remark-safe-content.mjs';
 import rehypeReading from './src/lib/rehype-reading.mjs';
 
-const configured = process.env.SITE_URL || process.env.CF_PAGES_URL;
+const configured = process.env.SITE_URL;
 let site;
 if (configured) {
   const url = new URL(configured);
@@ -15,16 +15,21 @@ if (configured) {
   site = url.origin;
 }
 
+const base = process.env.BASE_PATH || '/';
+if (!/^\/(?:[A-Za-z0-9_-]+\/)*$/.test(base)) throw new Error('BASE_PATH must start and end with / and contain only path segments.');
+
 export default defineConfig({
   site,
+  base,
   output: 'static',
+  redirects: { '/topics': `${base}articles/` },
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'never' },
   markdown: {
     processor: unified({
       smartypants: false,
       remarkPlugins: [remarkMath, remarkSafeContent],
-      rehypePlugins: [[rehypeKatex, { trust: false, strict: 'error', throwOnError: true, maxExpand: 1000 }], rehypeReading],
+      rehypePlugins: [[rehypeKatex, { trust: false, strict: 'error', throwOnError: true, maxExpand: 1000 }], [rehypeReading, { base }]],
       remarkRehype: { footnoteLabel: 'پانویس‌ها', footnoteBackLabel: 'بازگشت به متن' },
     }),
     shikiConfig: { theme: 'github-light', wrap: false },

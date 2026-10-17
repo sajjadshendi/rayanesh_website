@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../lib/paths';
 import Arrow from './Arrow.astro';
 import { type Issue, issueByline } from '../lib/catalog';
 interface Props { issue: Issue; level?: 2 | 3 }
@@ -8,13 +9,13 @@ const href = `/issues/${issue.id}/`;
 ---
 <article class="issue-card">
   <div class="cover-frame">
-    <img src={issue.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" />
+    <img src={withBase(issue.data.cover)} alt="" width="750" height="1060" loading="lazy" decoding="async" />
   </div>
   <div class="issue-card-meta">
-    <Heading class="issue-title"><a href={href}>{issue.data.title}</a></Heading>
+    <Heading class="issue-title"><a href={withBase(href)}>{issue.data.title}</a></Heading>
     {(issue.data.kind === 'regular' || issue.data.dateLabel) && <p class="issue-date">{issueByline(issue)}</p>}
     <p class="issue-icons">
-      <a class="issue-pdf" href={issue.data.pdf} aria-label={`دریافت PDF ${issue.data.title}`} title="دریافت PDF">
+      <a class="issue-pdf" href={withBase(issue.data.pdf)} aria-label={`دریافت PDF ${issue.data.title}`} title="دریافت PDF">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z" /><path d="M14 3.5V8h4.5" /><path d="M12 11v5.5m0 0 2.25-2.25M12 16.5l-2.25-2.25" /></svg>
       </a>
       <span class="issue-go" aria-hidden="true"><Arrow /></span>

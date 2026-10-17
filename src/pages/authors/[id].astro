@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../../lib/paths';
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import ArticleRow from '../../components/ArticleRow.astro';
@@ -24,7 +25,7 @@ const roles = [...new Set(issues.flatMap(issue => issue.data.credits.filter(cred
         </p>
       )}
       <p>{author.data.bio}</p>
-      {author.data.links.length > 0 && <ul class="author-links">{author.data.links.map(link => <li><a href={link.url} rel="me noopener noreferrer">{link.label}</a></li>)}</ul>}
+      {author.data.links.length > 0 && <ul class="author-links">{author.data.links.map(link => <li><a href={withBase(link.url)} rel="me noopener noreferrer">{link.label}</a></li>)}</ul>}
     </header>
     <section class="author-works" aria-labelledby="author-works-heading">
       <h2 class="section-title" id="author-works-heading">نوشته‌ها در رایانش</h2>
