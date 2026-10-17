@@ -14,7 +14,7 @@ if (!extension || !slugSchema.safeParse(slug).success) {
   const destination = resolve(root,`src/content/${kind}s/${slug}.${extension}`);
   try {
     await writeFile(destination,template,{flag:'wx'});
-    console.log(`Created ${destination}. Complete metadata before publishing. See docs/maintaining.md.`);
+    console.log(`Created ${destination}.`);
   } catch(error) {
     if (error.code === 'EEXIST') { console.error('This slug already exists; nothing was overwritten.'); process.exitCode = 1; }
     else throw error;
