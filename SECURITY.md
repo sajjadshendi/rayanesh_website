@@ -13,7 +13,7 @@ Rayanesh generates static pages. It has no visitor accounts, database or applica
 - Markdown processing rejects raw HTML, unsafe links and remote images.
 - Content schemas and build checks validate references, assets and draft publication boundaries.
 - KaTeX runs with trusted commands disabled.
-- Response headers are defined in [public/_headers](public/_headers). Verify their behavior on the deployed site; local preview does not apply Cloudflare headers.
+- GitHub Pages does not support custom response headers. The shared layout supplies a meta Content Security Policy and referrer policy. Header-only protections (including frame-ancestors, X-Frame-Options, Permissions-Policy and cross-origin isolation) require a hosting proxy; they are not provided by this deployment.
 - Build checks do not scan PDFs for malware or constitute a full security audit.
 
 ## Publishing and maintenance

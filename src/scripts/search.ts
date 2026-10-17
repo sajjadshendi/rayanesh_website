@@ -1,3 +1,4 @@
+import { withBase, withoutBase } from '../lib/paths';
 import { searchEntries } from '../lib/search.mjs';
 interface Entry { type: string; title: string; url: string; description: string; author?: string; text?: string; issue?: string }
 const TYPES = new Set(['', 'نوشته', 'شماره', 'نویسنده']);
@@ -12,13 +13,13 @@ let index: Promise<Entry[]> | undefined;
 let sequence = 0;
 let timer: ReturnType<typeof setTimeout>;
 function loadIndex() {
-  if (!index) index = fetch('/search-index.json', { credentials: 'omit' }).then(async response => {
+  if (!index) index = fetch(withBase('/search-index.json'), { credentials: 'omit' }).then(async response => {
     if (!response.ok) throw new Error('Search index unavailable');
     const data: unknown = await response.json();
     if (!Array.isArray(data)) throw new Error('Invalid index');
     return data.filter((e): e is Entry => typeof e?.title === 'string' && typeof e.description === 'string'
       && typeof e.type === 'string' && typeof e.url === 'string'
-      && /^\/(articles|issues|authors)\/[a-z0-9-]+\/$/.test(e.url));
+      && /^\/(articles|issues|authors)\/[a-z0-9-]+\/$/.test(withoutBase(e.url)));
   }).catch(error => { index = undefined; throw error; });
   return index;
 }
@@ -52,7 +53,7 @@ async function search() {
   try {
     const entries = await loadIndex();
     if (current !== sequence) return;
-    const scoped = entries.filter(entry => (!type || entry.type === type) && (!issue || entry.issue === issue || (entry.type === 'شماره' && entry.url === `/issues/${issue}/`)));
+    const scoped = entries.filter(entry => (!type || entry.type === type) && (!issue || entry.issue === issue || (entry.type === 'شماره' && entry.url === withBase(`/issues/${issue}/`))));
     const matched = searchEntries(scoped, query, 30) as Entry[];
     status.textContent = matched.length
       ? `${matched.length.toLocaleString('fa-IR')} نتیجه (حداکثر ۳۰ نتیجه)`

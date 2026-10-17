@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../lib/paths';
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import Arrow from '../components/Arrow.astro';
@@ -20,7 +21,7 @@ const paths = [
     </header>
     <div class="prose">
       <p>نشریه‌ای از جنس شعر و ادب هستیم با اتاقی سبز‌رنگ در همکف دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف</p>
-      <img src="/images/rayanesh-room.jpg">
+      <img src={withBase('/images/rayanesh-room.jpg')} alt="اتاق نشریه رایانش" />
     </div>
     <!--<blockquote class="pull-quote">
       <p>رسالت رایانش همیشه ایجاد اون نقطه امن بوده.</p>
@@ -30,7 +31,7 @@ const paths = [
       <h2 id="start-heading">از کجا شروع کنیم؟</h2>
       <div class="path-grid">
         {paths.map(path => (
-          <a class="path-card" href={path.href}>
+          <a class="path-card" href={withBase(path.href)}>
             <span class="path-card-title">{path.title}</span>
             <span class="path-card-text">{path.text}</span>
             <span class="path-card-go" aria-hidden="true"><Arrow /></span>
@@ -41,11 +42,11 @@ const paths = [
     {site.contactEmail && (
       <div class="prose">
         <h2>در ارتباط باشیم</h2>
-        <p><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+        <p><a href={withBase(`mailto:${site.contactEmail}`)}>{site.contactEmail}</a></p>
       </div>
     )}
     {site.socialLinks.length > 0 && (
-      <ul class="plain-links">{site.socialLinks.map(link => <li><a href={link.url} rel="noopener noreferrer">{link.label}</a></li>)}</ul>
+      <ul class="plain-links">{site.socialLinks.map(link => <li><a href={withBase(link.url)} rel="noopener noreferrer">{link.label}</a></li>)}</ul>
     )}-->
   </div>
 </Base>

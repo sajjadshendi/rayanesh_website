@@ -30,7 +30,7 @@ Rayanesh is the science and culture magazine of the Computer Engineering Scienti
 | Reading | Publishing | Engineering |
 | --- | --- | --- |
 | Persian, right-to-left layouts | Markdown articles and JSON metadata | Astro and TypeScript |
-| Dark mode and text-size controls | Issues, authors and PDF archives | Static output for Cloudflare Pages |
+| Dark mode and text-size controls | Issues, authors and PDF archives | Static output for GitHub Pages |
 | Search, math, code and footnotes | Optional audio, RSS and sitemap | Content validation and CI checks |
 
 Content lives in Git. Pages, search data and feeds are generated at build time; no application server, database or public administration panel is required.
@@ -53,7 +53,7 @@ npm run validate
 npm run preview
 ```
 
-Cloudflare credentials are not needed for local development. For canonical URLs and feeds, provide `SITE_URL` as an environment variable before starting the build; [.env.example](.env.example) shows the expected format.
+Hosting credentials are not needed for local development. For canonical URLs and feeds, provide `SITE_URL` as an environment variable before starting the build; [.env.example](.env.example) shows the expected format.
 
 ## Commands
 
@@ -79,7 +79,7 @@ The content tool also supports `author` and `issue`. See the [editorial workflow
 | Shared UI | [src/components/](src/components/) · [src/layouts/](src/layouts/) | Reusable markup and page layout |
 | Presentation | [src/styles/](src/styles/) · [src/scripts/](src/scripts/) | Styles and browser interactions |
 | Content rules | [src/lib/](src/lib/) | Schemas, catalog, Markdown processing and search |
-| Static assets | [public/](public/) | Covers, images, PDFs and response headers |
+| Static assets | [public/](public/) | Covers, images and PDFs |
 | Tooling | [scripts/](scripts/) · [tests/](tests/) | Content creation, validation and output checks |
 | Templates | [docs/templates/](docs/templates/) | Inputs used by the content creation tool |
 | Automation | [.github/workflows/ci.yml](.github/workflows/ci.yml) | Tests, build verification and dependency audit |
@@ -97,30 +97,28 @@ The [Validate magazine workflow](.github/workflows/ci.yml) runs on pushes to `ma
 
 ## Deployment
 
-The deployment target is **Cloudflare Pages**, using its Git integration.
+The deployment target is **GitHub Pages**, with [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml). Tests, type checks, content validation, link verification and dependency auditing must succeed before the built artifact is deployed. Pushes to `main` publish automatically; the workflow also supports **Run workflow**.
 
-<details>
-<summary><strong>Build settings and environment</strong></summary>
+### One-time migration settings
 
-| Setting | Value |
-| --- | --- |
-| Production branch | `main` |
-| Framework preset | `Astro` |
-| Build command | `npm ci && npm run build` |
-| Output directory | `dist` |
-| Root directory | Repository root |
-| `NODE_VERSION` | Match [.node-version](.node-version) |
-| `SKIP_DEPENDENCY_INSTALL` | `1` |
-| `ASTRO_TELEMETRY_DISABLED` | `1` |
-| `SITE_URL` | Production HTTPS origin; no path, query or fragment |
+1. In Cloudflare **Workers & Pages → this Pages project → Settings → Builds / Branch control**, turn off **Enable automatic production branch deployments** and set **Preview branches** to **None**. Save both settings. Editing this repository alone does not disable Cloudflare's Git integration. Existing Cloudflare deployments remain available until you retire them.
+2. In GitHub **Settings → Pages → Build and deployment → Source**, select **GitHub Actions**. A private repository requires a GitHub plan that supports Pages for private repositories (for this personal account, GitHub Pro). Do not change repository visibility just to enable deployment without reviewing the source/content disclosure.
+3. Run **Deploy to GitHub Pages** from the Actions tab after saving the setting. Open the URL shown by its deployment job and check the homepage, a nested article, search and a PDF download.
 
-Install development dependencies during the build; they include required validation tools. Set the final production origin explicitly for canonical URLs and feeds. Configuration falls back to `CF_PAGES_URL` when available.
+Expected default address: https://sajjadshendi.github.io/rayanesh_website/
 
-This static Pages setup does not need a Worker deployment command or Cloudflare API tokens in GitHub.
+The deployment workflow obtains the origin and base path from GitHub Pages, so a configured custom domain is supported too. No personal access token or Cloudflare secret is required. Domain/DNS migration is separate; do not retire the old hosting until the new URL is verified.
 
-</details>
+### Local production checks
 
-Pages deployment and GitHub Actions run independently. Review successful checks before merging into `main`; CI alone does not block a Pages deployment.
+```sh
+SITE_URL=https://sajjadshendi.github.io BASE_PATH=/rayanesh_website/ npm run validate
+npm run preview
+```
+
+Open the preview at `/rayanesh_website/`. `SITE_URL` is an HTTPS origin without a path; `BASE_PATH` starts and ends with `/`. Without these values, local development uses `/` and remains non-indexable. CI checks both root and repository-subpath builds.
+
+GitHub Pages does not interpret Cloudflare `_headers` or `_redirects`. The shared layout uses a meta Content Security Policy and referrer policy; header-only protections are documented in [SECURITY.md](SECURITY.md). The old `/topics/` route is handled by a static redirect. Arbitrary old `/topics/*` URLs fall back to the site's 404 page rather than a server-side wildcard redirect.
 
 ## Working together
 

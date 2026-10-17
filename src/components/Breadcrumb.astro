@@ -1,5 +1,6 @@
 ---
+import { withBase } from '../lib/paths';
 interface Props { items: { href?: string; label: string }[] }
 const { items } = Astro.props;
 ---
-<nav class="breadcrumb" aria-label="مسیر صفحه"><ol><li><a href="/">رایانش</a></li>{items.map(item => <li>{item.href ? <a href={item.href}>{item.label}</a> : <span aria-current="page">{item.label}</span>}</li>)}</ol></nav>
+<nav class="breadcrumb" aria-label="مسیر صفحه"><ol><li><a href={withBase('/')}>رایانش</a></li>{items.map(item => <li>{item.href ? <a href={withBase(item.href)}>{item.label}</a> : <span aria-current="page">{item.label}</span>}</li>)}</ol></nav>

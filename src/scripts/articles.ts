@@ -26,7 +26,7 @@ const matchesQuery = (haystack: string, query: string) => {
   const words = normalizePersian(query).split(' ').filter(Boolean);
   if (!words.length) return true;
   const text = normalizePersian(haystack);
-  return words.every(word => text.includes(word));
+  return words.every((word: string) => text.includes(word));
 };
 
 const apply = () => {

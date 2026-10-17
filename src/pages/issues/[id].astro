@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../../lib/paths';
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getCatalog, issueLabel, issueByline, fa } from '../../lib/catalog';
@@ -16,12 +17,12 @@ const showEyebrow = true;
   <div class="shell page">
     <Breadcrumb items={[{ href: '/issues/', label: 'گنجه' }, { label: issue.data.title }]} />
     <div class="issue-detail">
-      <figure class="issue-cover"><img src={issue.data.cover} alt={issue.data.coverAlt} width="750" height="1060" fetchpriority="high" /></figure>
+      <figure class="issue-cover"><img src={withBase(issue.data.cover)} alt={issue.data.coverAlt} width="750" height="1060" fetchpriority="high" /></figure>
       <div class="issue-detail-copy">
         {showEyebrow && <p class="eyebrow">{issueByline(issue, ' · ')}</p>}
         <h1>{issue.data.title}</h1>
         <p class="deck">{issue.data.description}</p>
-        <a class="button" href={issue.data.pdf}>خواندن نسخه PDF <span aria-hidden="true">↗</span></a>
+        <a class="button" href={withBase(issue.data.pdf)}>خواندن نسخه PDF <span aria-hidden="true">↗</span></a>
         {issue.data.credits.length > 0 && (
           <details class="credits">
             <summary>
@@ -41,7 +42,7 @@ const showEyebrow = true;
             <span class="index-number" aria-hidden="true">{fa(index + 1)}</span>
             <div>
               {linkArticles && entry.article
-                ? <h3><a href={`/articles/${entry.article}/`}>{entry.title}</a></h3>
+                ? <h3><a href={withBase(`/articles/${entry.article}/`)}>{entry.title}</a></h3>
                 : <h3>{entry.title}</h3>}
             </div>
           </li>

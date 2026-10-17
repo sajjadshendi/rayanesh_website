@@ -84,7 +84,7 @@ async function checkPublic(directory, base) {
     if (entry.isSymbolicLink()) throw new Error(`Symlinks are not allowed in public: ${entry.name}`);
     if (entry.isDirectory()) { await checkPublic(full,base); continue; }
     const local = full.slice(resolve(base,'public').length+1);
-    const allowed = ['_headers','_redirects','theme-init.js'].includes(local) || /\.(?:png|jpe?g|webp|avif|gif|pdf|mp3|ogg|m4a|wav|woff2?)$/.test(local);
+    const allowed = ['.nojekyll','theme-init.js'].includes(local) || /\.(?:png|jpe?g|webp|avif|gif|pdf|mp3|ogg|m4a|wav|woff2?)$/.test(local);
     if (!allowed) throw new Error(`Unexpected public file (possibly active/private content): ${local}`);
   }
 }

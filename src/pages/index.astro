@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../lib/paths';
 import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import IssueCard from '../components/IssueCard.astro';
@@ -24,25 +25,25 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 8);
     <h1 id="opening-title">{site.heroTitle}</h1>
     <p class="lead">{site.heroDescription}</p>
     <div class="button-row opening-actions">
-      <a class="button" href={`/issues/${issue.id}/`}>ورق زدن این شماره <Arrow /></a>
-      <a class="button button-ghost" href={issue.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
+      <a class="button" href={withBase(`/issues/${issue.id}/`)}>ورق زدن این شماره <Arrow /></a>
+      <a class="button button-ghost" href={withBase(issue.data.pdf)}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
     </div>
     <div class="opening-cover">
-      <a class="book" href={`/issues/${issue.id}/`} tabindex="-1" aria-hidden="true">
-        <img src={issue.data.cover} alt="" width="750" height="1060" fetchpriority="high" decoding="async" />
+      <a class="book" href={withBase(`/issues/${issue.id}/`)} tabindex="-1" aria-hidden="true">
+        <img src={withBase(issue.data.cover)} alt="" width="750" height="1060" fetchpriority="high" decoding="async" />
       </a>
     </div>
   </section>
 
   <section class="home-section shell" aria-labelledby="recent-heading">
-    <div class="section-heading"><h2 id="recent-heading">مطالب اخیر</h2><a class="text-link" href="/articles/">همه نوشته‌ها <Arrow /></a></div>
+    <div class="section-heading"><h2 id="recent-heading">مطالب اخیر</h2><a class="text-link" href={withBase('/articles/')}>همه نوشته‌ها <Arrow /></a></div>
     <div class="recent">{recent.map(({ issue: item, selected }) => (
       <div class="recent-col">
-        <a class="recent-cover" href={`/issues/${item.id}/`} tabindex="-1" aria-hidden="true">
-          <img class="recent-cover-crop" src={item.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" />
-          <img class="recent-cover-full" src={item.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" />
+        <a class="recent-cover" href={withBase(`/issues/${item.id}/`)} tabindex="-1" aria-hidden="true">
+          <img class="recent-cover-crop" src={withBase(item.data.cover)} alt="" width="750" height="1060" loading="lazy" decoding="async" />
+          <img class="recent-cover-full" src={withBase(item.data.cover)} alt="" width="750" height="1060" loading="lazy" decoding="async" />
         </a>
-        <h3 class="recent-issue"><a href={`/issues/${item.id}/`}>{item.data.title}</a></h3>
+        <h3 class="recent-issue"><a href={withBase(`/issues/${item.id}/`)}>{item.data.title}</a></h3>
         <p class="recent-date">{issueByline(item)}</p>
         {selected.length ? (
           <div class="recent-list">
@@ -51,7 +52,7 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 8);
         ) : (
           <div class="recent-empty">
             <p>نوشته‌های این شماره هنوز روی سایت نیامده‌اند. نسخه کامل را می‌توانید به‌صورت PDF بخوانید.</p>
-            <a class="button button-ghost" href={item.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
+            <a class="button button-ghost" href={withBase(item.data.pdf)}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
           </div>
         )}
       </div>
@@ -59,15 +60,15 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 8);
   </section>
 
   <section class="home-section shell" aria-labelledby="archive-heading">
-    <div class="section-heading"><h2 id="archive-heading">هر جلد، یک جهان</h2><a class="text-link" href="/issues/">گنجه <Arrow /></a></div>
+    <div class="section-heading"><h2 id="archive-heading">هر جلد، یک جهان</h2><a class="text-link" href={withBase('/issues/')}>گنجه <Arrow /></a></div>
     <div class="issue-grid issue-grid-five">{issues.slice(0, 5).map(issue => <IssueCard issue={issue} level={3} />)}</div>
   </section>
 
   <section class="home-section shell" aria-labelledby="people-heading">
-    <div class="section-heading"><h2 id="people-heading">نویسندگان</h2><a class="text-link" href="/authors/">همه نویسندگان <Arrow /></a></div>
+    <div class="section-heading"><h2 id="people-heading">نویسندگان</h2><a class="text-link" href={withBase('/authors/')}>همه نویسندگان <Arrow /></a></div>
     <ul class="writer-row">{writers.map(author => (
       <li>
-        <a class="writer" href={`/authors/${author.id}/`}>
+        <a class="writer" href={withBase(`/authors/${author.id}/`)}>
           <Avatar author={author} size="lg" />
           <span class="writer-name">{author.data.name}</span>
           <span class="writer-count">{fa(countFor(author.id))} نوشته</span>
