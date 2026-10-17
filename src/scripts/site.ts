@@ -57,18 +57,9 @@ if (archive) {
     });
     panels.forEach(panel => { panel.hidden = panel.dataset.archivePanel !== id; });
   };
-  const fromHash = () => location.hash === '#special' ? 'special' : 'regular';
+  const ids = new Set(tabs.map(tab => tab.dataset.archiveTab));
+  const fromHash = () => ids.has(location.hash.slice(1)) ? location.hash.slice(1) : 'regular';
   show(fromHash());
   tabs.forEach(tab => tab.addEventListener('click', () => show(tab.dataset.archiveTab ?? 'regular')));
   addEventListener('hashchange', () => show(fromHash()));
-}
-
-const compactFooter = matchMedia('(max-width: 760px)');
-const footerCols = [...document.querySelectorAll<HTMLDetailsElement>('.footer-col')];
-const syncFooter = () => {
-  footerCols.forEach(col => { col.open = !compactFooter.matches; });
-};
-if (footerCols.length) {
-  syncFooter();
-  compactFooter.addEventListener('change', syncFooter);
 }

@@ -4,25 +4,27 @@ import Breadcrumb from '../components/Breadcrumb.astro';
 import Arrow from '../components/Arrow.astro';
 import { site } from '../lib/catalog';
 const paths = [
-  { href: '/issues/', title: 'آرشیو شماره‌ها', text: 'جلد، فهرست و نسخهٔ PDF شماره‌های موجود را ببینید.' },
+  { href: '/issues/', title: 'گنجه', text: 'جلد، فهرست و نسخه PDF شماره‌های موجود را ببینید.' },
   { href: '/articles/', title: 'نوشته‌های وب', text: 'روایت‌ها و مقاله‌هایی که به‌تدریج از مجله به سایت آمده‌اند.' },
-  { href: '/authors/', title: 'صفحهٔ نویسندگان', text: 'مسیر هر نویسنده و نوشته‌هایش را دنبال کنید.' },
+  { href: '/authors/', title: 'صفحه نویسندگان', text: 'مسیر هر نویسنده و نوشته‌هایش را دنبال کنید.' },
 ];
 ---
-<Base title="دربارهٔ رایانش">
-  <div class="shell page narrow-page">
-    <Breadcrumb items={[{ label: 'دربارهٔ رایانش' }]} />
+<Base title="درباره رایانش">
+  <div class="shell page about-page">
+    <Breadcrumb items={[{ label: 'درباره رایانش' }]} />
     <header class="page-heading">
-      <p class="eyebrow">اتاق سبز، صفحه‌های باز</p>
-      <h1>خانهٔ کلمه‌ها</h1>
-      <p>رایانش، نشریهٔ علمی و فرهنگی دانشکدهٔ مهندسی کامپیوتر دانشگاه صنعتی شریف است.</p>
+      <!--<p class="eyebrow">اتاق سبز، صفحه‌های باز</p>-->
+      <!--<h1>خانه کلمه‌ها</h1>-->
+      <h1>خانه‌ای سبز از جنس شعر و ادب</h1>
+      <!--<p>رایانش، نشریه علمی و فرهنگی دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف است.</p>-->
     </header>
     <div class="prose">
-      <p>از تجربه‌های دانشجویی و روایت‌های شخصی تا ادبیات، فرهنگ و پرسش‌های علمی؛ رایانش جایی برای کنار هم خواندن و نوشتن است. این سایت راهی است برای دسترسی به شماره‌ها، آشنایی با نویسندگان و خواندن نوشته‌ها در اندازهٔ صفحهٔ شما.</p>
+      <p>نشریه‌ای از جنس شعر و ادب هستیم با اتاقی سبز‌رنگ در همکف دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف</p>
+      <img src="/images/rayanesh-room.jpg">
     </div>
-    <blockquote class="pull-quote">
-      <p>رسالت رایانش همیشه ایجاد اون نقطهٔ امن بوده.</p>
-      <cite>رایا رضایی، سخن سردبیر شمارهٔ هفدهم</cite>
+    <!--<blockquote class="pull-quote">
+      <p>رسالت رایانش همیشه ایجاد اون نقطه امن بوده.</p>
+      <cite>رایا رضایی، سخن سردبیر شماره هفدهم</cite>
     </blockquote>
     <section class="start-paths" aria-labelledby="start-heading">
       <h2 id="start-heading">از کجا شروع کنیم؟</h2>
@@ -44,6 +46,6 @@ const paths = [
     )}
     {site.socialLinks.length > 0 && (
       <ul class="plain-links">{site.socialLinks.map(link => <li><a href={link.url} rel="noopener noreferrer">{link.label}</a></li>)}</ul>
-    )}
+    )}-->
   </div>
 </Base>

@@ -19,7 +19,7 @@ export async function GET() {
     })),
     ...issues.map(i => ({
       type: 'شماره',
-      title: `${i.data.number ? `شمارهٔ ${fa(i.data.number)} — ` : 'ویژه‌نامه — '}${i.data.title}`,
+      title: `${i.data.kind === 'regular' && i.data.number ? `شماره ${fa(i.data.number)} — ` : i.data.kind === 'scientific' ? 'ویژه‌نامه علمی — ' : 'ویژه‌نامه — '}${i.data.title}`,
       url: `/issues/${i.id}/`,
       description: i.data.description,
       text: i.data.toc.map(t => t.title).join(' '),

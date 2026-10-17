@@ -29,12 +29,12 @@ test('Persian search matches Arabic letter variants, marks, half-spaces and digi
   assert.equal(searchEntries(entries,'شبکه خانه').length,0);
 });
 test('new articles are drafts and image descriptions are mandatory', () => {
-  const body={title:'مطلب',description:'شرح',authors:['writer'],issue:'1',topics:['science'],pdfPage:1};
+  const body={title:'مطلب',description:'شرح',authors:['writer'],issue:'1',pdfPage:1};
   assert.equal(articleSchema.parse(body).draft,true);
   assert.equal(articleSchema.safeParse({...body,image:'/images/image.webp'}).success,false);
 });
 test('broken editorial relationships and draft homepage references fail', () => {
-  const catalog={authors:[{id:'writer'}],issues:[{id:'1',data:{kind:'regular',number:1,order:1,draft:false,pdfPages:3,toc:[]}}],articles:[{id:'post',body:'متن معتبر برای مقالهٔ منتشرشده و خواندنی در وب‌سایت رایانش',data:{authors:['writer'],topics:['science'],issue:'1',pdfPage:2,draft:false}}],site:{featuredIssue:'1',featuredArticles:['post']}};
+  const catalog={authors:[{id:'writer'}],issues:[{id:'1',data:{kind:'regular',number:1,order:1,draft:false,pdfPages:3,toc:[]}}],articles:[{id:'post',body:'متن معتبر برای مقاله منتشرشده و خواندنی در وب‌سایت رایانش',data:{authors:['writer'],issue:'1',pdfPage:2,draft:false}}],site:{featuredIssue:'1',featuredArticles:['post']}};
   validateGraph(catalog);
   const broken=structuredClone(catalog); broken.articles[0].data.authors=['missing'];
   assert.throws(()=>validateGraph(broken),/missing author/);

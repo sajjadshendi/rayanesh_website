@@ -56,7 +56,7 @@ async function search() {
     const matched = searchEntries(scoped, query, 30) as Entry[];
     status.textContent = matched.length
       ? `${matched.length.toLocaleString('fa-IR')} نتیجه (حداکثر ۳۰ نتیجه)`
-      : 'نتیجه‌ای پیدا نشد. عبارت کوتاه‌تر، نوع دیگری از نتیجه، یا یکی از موضوع‌های پرخواننده را امتحان کنید.';
+      : 'نتیجه‌ای پیدا نشد. عبارت کوتاه‌تر یا نوع دیگری از نتیجه را امتحان کنید.';
     for (const entry of matched) {
       const li = document.createElement('li');
       const typeLabel = document.createElement('small');

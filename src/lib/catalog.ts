@@ -1,22 +1,23 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import rawSite from '../data/site.json';
-import { siteSchema, topics } from './content-schema.mjs';
+import { siteSchema } from './content-schema.mjs';
 
 export const site = siteSchema.parse(rawSite);
-export { topics };
 export type Article = CollectionEntry<'articles'>;
 export type Author = CollectionEntry<'authors'>;
 export type Issue = CollectionEntry<'issues'>;
 export const fa = (value: number) => value.toLocaleString('fa-IR');
 export const faDigits = (value: string | number) => String(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)] ?? digit);
 export const issueLabel = (issue: Issue) => issue.data.kind === 'regular'
-  ? `شمارهٔ ${fa(issue.data.number!)}` : 'ویژه‌نامه';
+  ? `شماره ${fa(issue.data.number!)}`
+  : (issue.data.dateLabel ?? issue.data.title);
+export const issueByline = (issue: Issue, sep = '، ') =>
+  issue.data.kind === 'regular' && issue.data.dateLabel
+    ? `${issueLabel(issue)}${sep}${issue.data.dateLabel}`
+    : issueLabel(issue);
 export const fileSize = (bytes: number) => `${(bytes / 1048576).toLocaleString('fa-IR', { maximumFractionDigits: 1 })} مگابایت`;
-export const readingTime = (body = '') => fa(Math.max(1, Math.ceil(body.split(/\s+/u).length / 190)));
 /* Authors without a photo get a designed monogram; the tone is derived from the name so it is stable across pages. */
 export const avatarTone = (name: string) => (Array.from(name).reduce((sum, ch) => sum + ch.codePointAt(0)!, 0) % 5) + 1;
-/* Group letter for the alphabetical author index: alef variants collapse into one group. */
-export const indexLetter = (name: string) => name.trim().charAt(0).replace(/[آأإٱ]/u, 'ا');
 
 export async function getCatalog() {
   const [allArticles, allIssues, authors] = await Promise.all([
