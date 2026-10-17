@@ -35,10 +35,10 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - name: Install locked dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: Test editorial and security boundaries
         run: npm test
       - name: Check types, build and verify static output
         run: npm run build
       - name: Check dependency advisories
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=low

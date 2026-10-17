@@ -1,5 +1,5 @@
 import { visit } from 'unist-util-visit';
-import { isSafeLink, isLocalAsset } from './content-schema.mjs';
+import { isSafeLink, assetSchema } from './content-schema.mjs';
 
 // Markdown is data, never executable MDX/HTML. Fail visibly instead of silently
 // publishing an edited article with missing or potentially active content.
@@ -16,10 +16,10 @@ export default function remarkSafeContent() {
       if (['link', 'definition'].includes(node.type) && !isSafeLink(node.url)) {
         file.fail('Unsafe link. Use HTTPS, mailto, /local-path/ or #anchor.', node);
       }
-      if (node.type === 'image' && (!isLocalAsset(node.url) || !node.alt?.trim())) {
+      if (node.type === 'image' && (!assetSchema.safeParse(node.url).success || !node.alt?.trim())) {
         file.fail('Images must use a local asset path and meaningful alt text.', node);
       }
-      if (node.type === 'definition' && imageReferences.has(node.identifier) && !isLocalAsset(node.url)) file.fail('Reference images must use local assets.', node);
+      if (node.type === 'definition' && imageReferences.has(node.identifier) && !assetSchema.safeParse(node.url).success) file.fail('Reference images must use local assets.', node);
     });
   };
 }

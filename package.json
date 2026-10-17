@@ -26,13 +26,16 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
-    "gray-matter": "4.0.3",
     "linkedom": "0.18.13",
     "remark-gfm": "4.0.1",
     "remark-parse": "11.0.0",
     "typescript": "6.0.3",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
-    "zod": "4.6.5"
+    "zod": "4.6.5",
+    "js-yaml": "4.3.2"
+  },
+  "overrides": {
+    "katex": "$katex"
   }
 }

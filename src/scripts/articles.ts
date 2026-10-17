@@ -12,7 +12,7 @@ const fa = (value: number) => value.toLocaleString('fa-IR');
 
 const read = () => {
   const url = new URL(location.href);
-  return { issue: url.searchParams.get('issue') ?? '', query: url.searchParams.get('q') ?? '' };
+  return { issue: (url.searchParams.get('issue') ?? '').slice(0, 100), query: (url.searchParams.get('q') ?? '').slice(0, 160) };
 };
 
 const write = (issue: string, query: string) => {
