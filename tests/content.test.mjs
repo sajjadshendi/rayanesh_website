@@ -15,7 +15,7 @@ test('unsafe protocols and obfuscated asset paths are rejected', () => {
 });
 test('raw active HTML cannot be compiled as editorial Markdown', async () => {
   const processor=unified().use(remarkParse).use(remarkGfm).use(remarkSafeContent);
-  for (const body of ['<script>alert(1)</script>','<img src=x onerror=alert(1)>','[bad](javascript:alert%281%29)','![x](https://tracking.example/pixel.png)']) {
+  for (const body of ['<script>alert(1)</script>','<img src=x onerror=alert(1)>','[bad](javascript:alert%281%29)','![x](https://tracking.example/pixel.png)', '![x](/downloads/issue.pdf)', '![x][img]\n\n[img]: /audio/voice.mp3']) {
     await assert.rejects(processor.run(processor.parse(body)));
   }
   await processor.run(processor.parse('## یک عنوان\n\n**متن** و [پیوند](/issues/).'));

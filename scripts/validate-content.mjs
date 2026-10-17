@@ -1,7 +1,7 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { resolve, basename, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import matter from 'gray-matter';
+import { parseFrontmatter } from './frontmatter.mjs';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
@@ -21,7 +21,7 @@ export async function loadSources(base = root) {
       const id = basename(file.name, extension); slugSchema.parse(id);
       const source = await readFile(resolve(directory, file.name), 'utf8');
       if (extension === '.md' && !/^---\r?\n/.test(source)) throw new Error(`${file.name}: use plain YAML frontmatter, starting with --- on its own line.`);
-      const parsed = extension === '.md' ? matter(source, { language: 'yaml' }) : { data: JSON.parse(source), content: '' };
+      const parsed = extension === '.md' ? parseFrontmatter(source) : { data: JSON.parse(source), content: '' };
       result.push({ id, data: schema.parse(parsed.data), body: parsed.content, file: `src/content/${name}/${file.name}` });
     }
     collections[name] = result;

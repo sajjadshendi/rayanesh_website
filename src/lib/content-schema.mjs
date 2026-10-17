@@ -10,14 +10,14 @@ export function isLocalAsset(value) {
 export function isHttps(value) {
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' && !url.username && !url.password && !/[\s\\]/.test(value);
+    return /^https:\/\//i.test(value) && url.protocol === 'https:' && !url.username && !url.password && !/[\s\\]/.test(value);
   } catch { return false; }
 }
 export function isSafeLink(value) {
-  if (/[\u0000-\u0020\u007f\\]/.test(value)) return false;
+  if (/[\u0000-\u0020\u007f\\]/.test(value) || /%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)/i.test(value)) return false;
   if (value.startsWith('#')) return value.length > 1;
   if (value.startsWith('/')) return !value.startsWith('//') && !/%(?:2f|5c|0[ad])/i.test(value)
-    && !value.split(/[/?#]/).includes('..');
+    && !value.split(/[?#]/)[0].replace(/%2e/ig, '.').split('/').includes('..');
   if (/^mailto:[^?\s@]+@[^?\s@]+\.[^?\s@]+$/.test(value)) return true;
   return isHttps(value);
 }
