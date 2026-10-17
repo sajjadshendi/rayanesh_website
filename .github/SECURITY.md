@@ -23,6 +23,6 @@ Rayanesh generates static pages. It has no visitor accounts, database or applica
 - Keep secrets out of commits, logs and browser-exposed configuration.
 - Use multi-factor authentication and limit repository and hosting access to the roles needed.
 - Review dependency updates with the lockfile and run `npm run validate` and `npm audit --audit-level=high`.
-- Review successful checks before merging: Pages Git integration deploys independently of GitHub Actions.
+- Review successful checks before merging. The GitHub Pages workflow publishes only after its build, validation and audit steps succeed.
 
 If a credential is exposed, revoke or rotate it at its provider first, then review access and deployment logs. Removing a file does not invalidate credentials or remove earlier deployments.

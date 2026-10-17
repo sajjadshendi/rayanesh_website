@@ -10,11 +10,11 @@ if (!extension || !slugSchema.safeParse(slug).success) {
   process.exitCode = 1;
 } else {
   const root = fileURLToPath(new URL('..',import.meta.url));
-  const template = await readFile(resolve(root,`docs/templates/${kind}.${extension}`),'utf8');
+  const template = await readFile(resolve(root,`scripts/templates/${kind}.${extension}`),'utf8');
   const destination = resolve(root,`src/content/${kind}s/${slug}.${extension}`);
   try {
     await writeFile(destination,template,{flag:'wx'});
-    console.log(`Created ${destination}. Complete metadata before publishing. See docs/CONTENT_FA.md.`);
+    console.log(`Created ${destination}. Complete metadata before publishing. See docs/maintaining.md.`);
   } catch(error) {
     if (error.code === 'EEXIST') { console.error('This slug already exists; nothing was overwritten.'); process.exitCode = 1; }
     else throw error;

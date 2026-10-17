@@ -1,25 +1,17 @@
 ---
-name: Content correction
-about: Flag a transcription, attribution, metadata or archive problem.
+name: اصلاح محتوای نشریه
+about: گزارش اشتباه در متن، نام نویسنده، اطلاعات شماره یا فایل آرشیو.
 title: ""
 ---
 
-## Location
+### محل اشکال
 
-- Article URL or repository path:
-- Magazine issue:
-- PDF page, if relevant:
+نشانی صفحه، شمارۀ نشریه و در صورت نیاز شمارۀ صفحۀ PDF:
 
-## Current content
+### اصلاح پیشنهادی
 
-Quote the specific passage or metadata that needs review.
+متن یا اطلاعات فعلی و صورت درست آن:
 
-## Suggested correction
+### منبع
 
-Provide the proposed wording or corrected value.
-
-## Source
-
-Include the source reference that supports the correction. Distinguish physical PDF page numbers from printed page numbers where they differ.
-
-<!-- Do not attach unpublished material or personal information without permission. -->
+مرجع یا توضیحی که اصلاح را تأیید می‌کند:
