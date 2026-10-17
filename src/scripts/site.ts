@@ -37,6 +37,14 @@ if (masthead && menuToggle) {
   };
   menuToggle.hidden = false;
   setMenu(false);
+  const mobileMenu = matchMedia('(max-width: 860px)');
+  mobileMenu.addEventListener('change', () => {
+    const focusWasInNav = Boolean(document.activeElement?.closest('#site-nav'));
+    const focusWasOnToggle = document.activeElement === menuToggle;
+    setMenu(false);
+    if (mobileMenu.matches && focusWasInNav) menuToggle.focus();
+    if (!mobileMenu.matches && focusWasOnToggle) masthead.querySelector<HTMLAnchorElement>('#site-nav a')?.focus();
+  });
   menuToggle.addEventListener('click', () => setMenu(masthead.dataset.menu !== 'open'));
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && masthead.dataset.menu === 'open') { setMenu(false); menuToggle.focus(); }
