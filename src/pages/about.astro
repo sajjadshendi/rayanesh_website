@@ -2,51 +2,16 @@
 import { withBase } from '../lib/paths';
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
-import Arrow from '../components/Arrow.astro';
-import { site } from '../lib/catalog';
-const paths = [
-  { href: '/issues/', title: 'گنجه', text: 'جلد، فهرست و نسخه PDF شماره‌های موجود را ببینید.' },
-  { href: '/articles/', title: 'نوشته‌های وب', text: 'روایت‌ها و مقاله‌هایی که به‌تدریج از مجله به سایت آمده‌اند.' },
-  { href: '/authors/', title: 'صفحه نویسندگان', text: 'مسیر هر نویسنده و نوشته‌هایش را دنبال کنید.' },
-];
 ---
 <Base title="درباره رایانش">
   <div class="shell page about-page">
     <Breadcrumb items={[{ label: 'درباره رایانش' }]} />
     <header class="page-heading">
-      <!--<p class="eyebrow">اتاق سبز، صفحه‌های باز</p>-->
-      <!--<h1>خانه کلمه‌ها</h1>-->
       <h1>خانه‌ای سبز از جنس شعر و ادب</h1>
-      <!--<p>رایانش، نشریه علمی و فرهنگی دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف است.</p>-->
     </header>
     <div class="prose">
       <p>نشریه‌ای از جنس شعر و ادب هستیم با اتاقی سبز‌رنگ در همکف دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف</p>
       <img src={withBase('/images/rayanesh-room.jpg')} alt="اتاق نشریه رایانش" />
     </div>
-    <!--<blockquote class="pull-quote">
-      <p>رسالت رایانش همیشه ایجاد اون نقطه امن بوده.</p>
-      <cite>رایا رضایی، سخن سردبیر شماره هفدهم</cite>
-    </blockquote>
-    <section class="start-paths" aria-labelledby="start-heading">
-      <h2 id="start-heading">از کجا شروع کنیم؟</h2>
-      <div class="path-grid">
-        {paths.map(path => (
-          <a class="path-card" href={withBase(path.href)}>
-            <span class="path-card-title">{path.title}</span>
-            <span class="path-card-text">{path.text}</span>
-            <span class="path-card-go" aria-hidden="true"><Arrow /></span>
-          </a>
-        ))}
-      </div>
-    </section>
-    {site.contactEmail && (
-      <div class="prose">
-        <h2>در ارتباط باشیم</h2>
-        <p><a href={withBase(`mailto:${site.contactEmail}`)}>{site.contactEmail}</a></p>
-      </div>
-    )}
-    {site.socialLinks.length > 0 && (
-      <ul class="plain-links">{site.socialLinks.map(link => <li><a href={withBase(link.url)} rel="noopener noreferrer">{link.label}</a></li>)}</ul>
-    )}-->
   </div>
 </Base>

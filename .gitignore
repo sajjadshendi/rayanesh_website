@@ -4,10 +4,14 @@ dist/
 .env
 .env.*
 !.env.example
-.wrangler/
 coverage/
 test-results/
 playwright-report/
 *.log
 .DS_Store
 Thumbs.db
+
+# Local editor and assistant settings
+.cursor/
+.vscode/
+.idea/
