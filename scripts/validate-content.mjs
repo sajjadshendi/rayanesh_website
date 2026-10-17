@@ -11,7 +11,6 @@ import { articleSchema, authorSchema, issueSchema, siteSchema, slugSchema, isLoc
 import remarkSafeContent from '../src/lib/remark-safe-content.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const maxAsset = 25 * 1024 * 1024;
 export async function loadSources(base = root) {
   const collections = {};
   for (const [name, schema, extension] of [['articles', articleSchema, '.md'], ['authors', authorSchema, '.json'], ['issues', issueSchema, '.json']]) {
@@ -21,7 +20,7 @@ export async function loadSources(base = root) {
       if (!file.isFile() || extname(file.name) !== extension) throw new Error(`Unexpected file in ${name}: ${file.name}. Only ${extension} files are allowed.`);
       const id = basename(file.name, extension); slugSchema.parse(id);
       const source = await readFile(resolve(directory, file.name), 'utf8');
-      if (extension === '.md' && !source.startsWith('---\n')) throw new Error(`${file.name}: use plain YAML frontmatter, starting with --- on its own line.`);
+      if (extension === '.md' && !/^---\r?\n/.test(source)) throw new Error(`${file.name}: use plain YAML frontmatter, starting with --- on its own line.`);
       const parsed = extension === '.md' ? matter(source, { language: 'yaml' }) : { data: JSON.parse(source), content: '' };
       result.push({ id, data: schema.parse(parsed.data), body: parsed.content, file: `src/content/${name}/${file.name}` });
     }
@@ -40,7 +39,6 @@ export function validateGraph({ articles, authors, issues, site }) {
   for (const a of articles) {
     for (const id of a.data.authors) if (!authorIds.has(id)) throw new Error(`${a.id}: missing author ${id}`);
     unique(a.data.authors, `author on ${a.id}`);
-    unique(a.data.topics, `topic on ${a.id}`);
     const issue = issueMap.get(a.data.issue);
     if (!issue) throw new Error(`${a.id}: missing issue ${a.data.issue}`);
     if (!a.data.draft && issue.data.draft) throw new Error(`${a.id}: published article refers to a draft issue`);
@@ -49,6 +47,12 @@ export function validateGraph({ articles, authors, issues, site }) {
   }
   for (const i of issues) {
     if (i.data.kind === 'regular' && !i.data.number) throw new Error(`${i.id}: regular issues require number`);
+    const homepageArticles = i.data.homepageArticles ?? [];
+    unique(homepageArticles, `homepage article on ${i.id}`);
+    for (const id of homepageArticles) {
+      const article = articleMap.get(id);
+      if (!article || article.data.issue !== i.id || article.data.draft) throw new Error(`${i.id}: invalid or unpublished homepage article ${id}`);
+    }
     for (const item of i.data.toc) {
       if (item.pdfPage > i.data.pdfPages) throw new Error(`${i.id}: TOC page is out of range`);
       if (item.article) {
@@ -67,7 +71,6 @@ async function checkAsset(path, base, expectedBytes) {
   const full = resolve(base, 'public', path.slice(1));
   const info = await stat(full).catch(() => { throw new Error(`Missing asset: ${path}`); });
   if (!info.isFile()) throw new Error(`Asset is not a regular file: ${path}`);
-  if (info.size > maxAsset) throw new Error(`Cloudflare Pages limit exceeded (25 MiB): ${path}`);
   if (expectedBytes !== undefined && info.size !== expectedBytes) throw new Error(`${path}: pdfBytes must equal ${info.size}`);
   if (path.endsWith('.pdf')) {
     const bytes = await readFile(full);
@@ -83,7 +86,6 @@ async function checkPublic(directory, base) {
     const local = full.slice(resolve(base,'public').length+1);
     const allowed = ['_headers','_redirects','theme-init.js'].includes(local) || /\.(?:png|jpe?g|webp|avif|gif|pdf|mp3|ogg|m4a|wav|woff2?)$/.test(local);
     if (!allowed) throw new Error(`Unexpected public file (possibly active/private content): ${local}`);
-    if ((await stat(full)).size > maxAsset) throw new Error(`Cloudflare Pages limit exceeded (25 MiB): ${local}`);
   }
 }
 

@@ -1,9 +1,118 @@
 {
-  "title": "سلام، ورودی ۱۴۰۴",
+  "title": "ویژه‌نامه ورودی مهندسی کامپیوتر ۱۴۰۴",
   "kind": "special",
   "order": 195,
-  "dateLabel": "۱۴۰۴",
-  "description": "ویژه‌نامهٔ ورودی‌های مهندسی کامپیوتر ۱۴۰۴؛ نخستین قدم‌ها در فضای دانشکده.",
+  "dateLabel": "ویژه‌نامه ورودی ۱۴۰۴",
+  "description": "ویژه‌نامه ورودی‌های مهندسی کامپیوتر ۱۴۰۴؛ نخستین قدم‌ها در فضای دانشکده.",
+  "homepageArticles": [
+    "salam-voroodi-1404",
+    "tosieh-be-pardisiha",
+    "kanoonha-va-rooydadha"
+  ],
+  "toc": [
+    {
+      "title": "سخن سردبیر",
+      "pdfPage": 1,
+      "article": "bia-rayanesh"
+    },
+    {
+      "title": "معرفی عبارات کاربردی و پرتکرار!",
+      "pdfPage": 1,
+      "article": "moarefi-ebarat"
+    },
+    {
+      "title": "سلام ورودی!",
+      "pdfPage": 2,
+      "article": "salam-voroodi-1404"
+    },
+    {
+      "title": "شروع یک فصل تازه",
+      "pdfPage": 2,
+      "article": "shoru-fasl-taze"
+    },
+    {
+      "title": "سلام دانشگاه! ورود به سرزمین ناشناخته",
+      "pdfPage": 2,
+      "article": "salam-daneshgah"
+    },
+    {
+      "title": "توصیه به پردیسی‌ها",
+      "pdfPage": 3,
+      "article": "tosieh-be-pardisiha"
+    },
+    {
+      "title": "به خونه جدیدت خوش اومدی!",
+      "pdfPage": 3,
+      "article": "be-khone-jadid"
+    },
+    {
+      "title": "از الان تا یک سال بعد",
+      "pdfPage": 4,
+      "article": "az-alan-ta-yek-sal"
+    },
+    {
+      "title": "کانون‌ها، رویدادها و باقی فعالیت‌های دانشجویی!",
+      "pdfPage": 4,
+      "article": "kanoonha-va-rooydadha"
+    },
+    {
+      "title": "سر کلاس بریم یا نریم؟ سر کارگاه بریم یا نریم؟",
+      "pdfPage": 5,
+      "article": "sar-kelas-berim"
+    },
+    {
+      "title": "رقابت نیست",
+      "pdfPage": 5,
+      "article": "reghabat-nist"
+    },
+    {
+      "title": "اسسی",
+      "pdfPage": 6,
+      "article": "essi"
+    },
+    {
+      "title": "شورای صنفی",
+      "pdfPage": 6,
+      "article": "shoraye-senfi"
+    },
+    {
+      "title": "مشو غرّه به امروزت!",
+      "pdfPage": 7,
+      "article": "mosho-ghorre"
+    },
+    {
+      "title": "شریف؛ فراتر از نمره و پروژه",
+      "pdfPage": 7,
+      "article": "sharif-faratar"
+    },
+    {
+      "title": "ترملی؛ همه‌چیزِ ترم در یک نگاه!",
+      "pdfPage": 8,
+      "article": "termli"
+    }
+  ],
+  "credits": [
+    {
+      "role": "مسئول متن",
+      "names": ["سیدپارسا بنی‌هاشمی"]
+    },
+    {
+      "role": "صفحه‌آرایی",
+      "names": ["محمدپارسا محمودآبادی آرانی", "پریسا جلالی", "آتنا رئیسی", "فاطمه نیلفروشان", "سیدپارسا بنی‌ هاشمی"]
+    },
+    {
+      "role": "طراحی لوگو",
+      "names": ["پارسا ضمیری", "آتنا رئیسی", "پارسا عدل‌پرور", "فاطمه نیلفروشان"]
+    },
+    {
+      "role": "طراحی یادگاری",
+      "names": ["نفیسه زارعی"]
+    },
+    {
+      "role": "ویراستاری",
+      "names": ["خورشید باهوش نائینی", "مشتاق معتضدیان", "پرنیا حیدری", "سیده سارا دستغیب", "آیناز رحمانی", "رایا رضائی", "محمد بنی‌احمدی", "محمدعلی مس‌چی"]
+    }
+  ],
   "cover": "/covers/freshers-1404.webp",
   "coverAlt": "جلد سلام، ورودی ۱۴۰۴ رایانش",
   "pdf": "/downloads/rayanesh-freshers-1404.pdf",

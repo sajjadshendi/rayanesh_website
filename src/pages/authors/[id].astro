@@ -3,13 +3,12 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import ArticleRow from '../../components/ArticleRow.astro';
 import Avatar from '../../components/Avatar.astro';
-import { getCatalog, topics, fa } from '../../lib/catalog';
+import { getCatalog, fa } from '../../lib/catalog';
 export async function getStaticPaths() { const { authors, articles } = await getCatalog(); return authors.filter(a => articles.some(p => p.data.authors.includes(a.id))).map(author => ({ params: { id: author.id }, props: { author } })); }
 const { author } = Astro.props;
 const { articles, authorMap, issueMap, issues } = await getCatalog();
 const selected = articles.filter(a => a.data.authors.includes(author.id));
-const specialties = [...new Set(selected.flatMap(a => a.data.topics))];
-const roles = [...new Set(issues.flatMap(issue => issue.data.credits.filter(credit => credit.names.includes(author.data.name)).map(credit => credit.role)))];
+const roles = [...new Set(issues.flatMap(issue => issue.data.credits.filter(credit => credit.names.includes(author.data.name)).map(credit => credit.role)))].filter(role => /سردبیر/.test(role));
 ---
 <Base title={author.data.name} description={author.data.bio}>
   <div class="shell page">
@@ -18,10 +17,9 @@ const roles = [...new Set(issues.flatMap(issue => issue.data.credits.filter(cred
       <Avatar author={author} size="md" labelled />
       <p class="eyebrow">به قلمِ</p>
       <h1>{author.data.name}</h1>
-      {(roles.length > 0 || specialties.length > 0) && (
+      {(roles.length > 0 || selected.length > 0) && (
         <p class="author-tags">
           {roles.map(role => <span class="pill pill-accent">{role}</span>)}
-          {specialties.map(id => <a class="pill" href={`/topics/${id}/`}>{topics[id]}</a>)}
           <span class="pill">{fa(selected.length)} نوشته</span>
         </p>
       )}

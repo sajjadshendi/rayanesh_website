@@ -2,88 +2,77 @@
 import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import IssueCard from '../components/IssueCard.astro';
-import AuthorCard from '../components/AuthorCard.astro';
 import Avatar from '../components/Avatar.astro';
 import Arrow from '../components/Arrow.astro';
-import { site, getCatalog, fa, issueLabel, readingTime } from '../lib/catalog';
+import { site, getCatalog, fa, issueByline } from '../lib/catalog';
 const { articleMap, issueMap, issues, authorMap, authors, articles } = await getCatalog();
 const issue = issueMap.get(site.featuredIssue)!;
-const selected = site.featuredArticles.map(id => articleMap.get(id)!);
-const countFor = (id: string) => articles.filter(a => a.data.authors.includes(id)).length;
-const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 6);
-const preview = issue.data.toc.slice(0, 3).map((item, index) => {
-  const article = item.article ? articleMap.get(item.article) : undefined;
-  const fromIssue = article?.data.issue === issue.id ? article : undefined;
-  const people = (fromIssue?.data.authors ?? []).map(id => authorMap.get(id)).filter(a => a != null);
-  return {
-    href: fromIssue ? `/articles/${fromIssue.id}/` : `/issues/${issue.id}/`,
-    number: fa(index + 1),
-    title: item.title,
-    people,
-    minutes: fromIssue ? readingTime(fromIssue.body) : undefined,
-  };
+/* The featured issue and the one published before it. Each issue can select up to three homepage articles. */
+const recent = issues.slice(issues.indexOf(issue), issues.indexOf(issue) + 2).map(item => {
+  const tocOrder = item.data.toc.map(entry => entry.article).filter(id => id != null);
+  const rank = (id: string) => { const at = tocOrder.indexOf(id); return at === -1 ? tocOrder.length : at; };
+  const own = articles.filter(a => a.data.issue === item.id).sort((a, b) => rank(a.id) - rank(b.id));
+  const chosen = (item.data.homepageArticles ?? []).map(id => articleMap.get(id)!).filter(article => article?.data.issue === item.id);
+  return { issue: item, selected: chosen.length ? chosen : own.slice(0, 3) };
 });
+const countFor = (id: string) => articles.filter(a => a.data.authors.includes(id)).length;
+const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 8);
 ---
 <Base>
   <section class="opening shell" aria-labelledby="opening-title">
-    <div class="opening-copy">
-      <p class="pill pill-accent">جلد {issueLabel(issue)} · {issue.data.title}</p>
-      <h1 id="opening-title">{site.heroTitle}</h1>
-      <p class="lead">{site.heroDescription}</p>
-      <div class="button-row">
-        <a class="button" href={`/issues/${issue.id}/`}>ورق زدن این شماره <Arrow /></a>
-        <a class="button button-ghost" href={issue.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>نسخهٔ PDF</a>
-      </div>
+    <p class="opening-meta">{issueByline(issue)}</p>
+    <h1 id="opening-title">{site.heroTitle}</h1>
+    <p class="lead">{site.heroDescription}</p>
+    <div class="button-row opening-actions">
+      <a class="button" href={`/issues/${issue.id}/`}>ورق زدن این شماره <Arrow /></a>
+      <a class="button button-ghost" href={issue.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
     </div>
-    <figure class="opening-cover">
-      <a href={`/issues/${issue.id}/`} tabindex="-1" aria-hidden="true"><img src={issue.data.cover} alt="" width="750" height="1060" fetchpriority="high" decoding="async" /></a>
-      <figcaption><span class="sr-only">{issue.data.coverAlt}. </span>جلد {issueLabel(issue)}{issue.data.dateLabel && `، ${issue.data.dateLabel}`}</figcaption>
-    </figure>
+    <div class="opening-cover">
+      <a class="book" href={`/issues/${issue.id}/`} tabindex="-1" aria-hidden="true">
+        <img src={issue.data.cover} alt="" width="750" height="1060" fetchpriority="high" decoding="async" />
+      </a>
+    </div>
   </section>
 
-  <section class="home-section shell" aria-labelledby="opening-index-title">
-    <div class="section-heading">
-      <h2 id="opening-index-title">از این شماره بخوانید</h2>
-      <a class="text-link" href={`/issues/${issue.id}/`}>همه <Arrow /></a>
-    </div>
-    <ol class="index-cards">{preview.map(item => (
-      <li>
-        <a class="index-card" href={item.href}>
-          <span class="index-top">
-            <span class="index-num" aria-hidden="true">{item.number}</span>
-            {item.minutes && (
-              <span class="index-time">
-                <svg class="icon icon-clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" /><path d="M12 8.5V12l2.4 1.6" /></svg>
-                {item.minutes} دقیقه خواندن
-              </span>
-            )}
-          </span>
-          <span class="index-title">{item.title}</span>
-          {item.people.length > 0 && (
-            <span class="index-foot">
-              <span class="index-author">
-                <Avatar author={item.people[0]} />
-                <span>{item.people.map(person => person.data.name).join('، ')}</span>
-              </span>
-            </span>
-          )}
+  <section class="home-section shell" aria-labelledby="recent-heading">
+    <div class="section-heading"><h2 id="recent-heading">مطالب اخیر</h2><a class="text-link" href="/articles/">همه نوشته‌ها <Arrow /></a></div>
+    <div class="recent">{recent.map(({ issue: item, selected }) => (
+      <div class="recent-col">
+        <a class="recent-cover" href={`/issues/${item.id}/`} tabindex="-1" aria-hidden="true">
+          <img class="recent-cover-crop" src={item.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" />
+          <img class="recent-cover-full" src={item.data.cover} alt="" width="750" height="1060" loading="lazy" decoding="async" />
         </a>
-      </li>
-    ))}</ol>
-  </section>
-
-  <section class="home-section shell" aria-labelledby="selected-heading">
-    <div class="section-heading"><h2 id="selected-heading">برای مکث و خواندن</h2><a class="text-link" href="/articles/">همهٔ نوشته‌ها <Arrow /></a></div>
-    <div class="card-grid">{selected.map(article => <ArticleCard article={article} authorMap={authorMap} issueMap={issueMap} />)}</div>
+        <h3 class="recent-issue"><a href={`/issues/${item.id}/`}>{item.data.title}</a></h3>
+        <p class="recent-date">{issueByline(item)}</p>
+        {selected.length ? (
+          <div class="recent-list">
+            {selected.map(article => <ArticleCard article={article} authorMap={authorMap} issueMap={issueMap} media={false} level={4} />)}
+          </div>
+        ) : (
+          <div class="recent-empty">
+            <p>نوشته‌های این شماره هنوز روی سایت نیامده‌اند. نسخه کامل را می‌توانید به‌صورت PDF بخوانید.</p>
+            <a class="button button-ghost" href={item.data.pdf}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
+          </div>
+        )}
+      </div>
+    ))}</div>
   </section>
 
   <section class="home-section shell" aria-labelledby="archive-heading">
-    <div class="section-heading"><h2 id="archive-heading">هر شماره، یک جهان</h2><a class="text-link" href="/issues/">آرشیو شماره‌ها <Arrow /></a></div>
-    <div class="issue-grid issue-grid-scroll">{issues.filter(i => i.data.kind === 'regular').slice(0, 4).map(issue => <IssueCard issue={issue} level={3} />)}</div>
+    <div class="section-heading"><h2 id="archive-heading">هر جلد، یک جهان</h2><a class="text-link" href="/issues/">گنجه <Arrow /></a></div>
+    <div class="issue-grid issue-grid-five">{issues.slice(0, 5).map(issue => <IssueCard issue={issue} level={3} />)}</div>
   </section>
 
   <section class="home-section shell" aria-labelledby="people-heading">
-    <div class="section-heading"><h2 id="people-heading">نویسندگان</h2><a class="text-link" href="/authors/">همهٔ نویسندگان <Arrow /></a></div>
-    <div class="author-grid">{writers.map(a => <AuthorCard author={a} count={countFor(a.id)} />)}</div>
+    <div class="section-heading"><h2 id="people-heading">نویسندگان</h2><a class="text-link" href="/authors/">همه نویسندگان <Arrow /></a></div>
+    <ul class="writer-row">{writers.map(author => (
+      <li>
+        <a class="writer" href={`/authors/${author.id}/`}>
+          <Avatar author={author} size="lg" />
+          <span class="writer-name">{author.data.name}</span>
+          <span class="writer-count">{fa(countFor(author.id))} نوشته</span>
+        </a>
+      </li>
+    ))}</ul>
   </section>
 </Base>

@@ -6,21 +6,21 @@ import { getCatalog, fa } from '../../lib/catalog';
 const { issues } = await getCatalog();
 const regular = issues.filter(i => i.data.kind === 'regular');
 const special = issues.filter(i => i.data.kind === 'special');
+const scientific = issues.filter(i => i.data.kind === 'scientific');
 ---
-<Base title="آرشیو شماره‌ها" description="شماره‌ها و ویژه‌نامه‌های رایانش، همراه با جلد، فهرست و نسخهٔ PDF.">
+<Base title="گنجه" description="شماره‌ها و ویژه‌نامه‌های رایانش، همراه با جلد، فهرست و نسخه PDF.">
   <div class="shell page">
-    <Breadcrumb items={[{ label: 'آرشیو شماره‌ها' }]} />
+    <Breadcrumb items={[{ label: 'گنجه' }]} />
     <header class="page-heading page-heading-tight">
-      <p class="eyebrow">یک قفسه، چندین قصه</p>
-      <h1>شماره‌های رایانش</h1>
-      <p>{fa(issues.length)} شماره و ویژه‌نامه در این آرشیو در دسترس است.</p>
+      <h1>منتشر شده‌های رایانش</h1>
+      <p>{fa(issues.length)} شماره و ویژه‌نامه در این گنجه در دسترس هستند.</p>
     </header>
     <div class="archive" data-archive>
       <nav class="archive-tabs topic-nav" aria-label="بخش‌های آرشیو">
-        <p class="archive-tabs-hint">برای دیدن هر مجموعه، یکی از این دو را انتخاب کنید.</p>
         <div class="topic-nav-track">
           <a class="topic-chip" href="#regular" data-archive-tab="regular">شماره‌های نشریه · {fa(regular.length)}</a>
           <a class="topic-chip" href="#special" data-archive-tab="special">ویژه‌نامه‌ها · {fa(special.length)}</a>
+          <a class="topic-chip" href="#scientific" data-archive-tab="scientific">ویژه‌نامه‌های علمی · {fa(scientific.length)}</a>
         </div>
       </nav>
       <section id="regular" class="archive-section" data-archive-panel="regular">
@@ -30,6 +30,12 @@ const special = issues.filter(i => i.data.kind === 'special');
       <section id="special" class="archive-section" data-archive-panel="special">
         <h2 class="section-title">ویژه‌نامه‌ها</h2>
         <div class="issue-grid">{special.map(issue => <IssueCard issue={issue} level={3} />)}</div>
+      </section>
+      <section id="scientific" class="archive-section" data-archive-panel="scientific">
+        <h2 class="section-title">ویژه‌نامه‌های علمی</h2>
+        {scientific.length
+          ? <div class="issue-grid">{scientific.map(issue => <IssueCard issue={issue} level={3} />)}</div>
+          : <p class="empty-state">هنوز ویژه‌نامه علمی‌ای در این آرشیو نیست.</p>}
       </section>
     </div>
   </div>

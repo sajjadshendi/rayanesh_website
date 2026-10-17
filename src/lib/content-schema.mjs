@@ -2,13 +2,6 @@ import { z } from 'zod';
 
 export const slugSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Use a lowercase ASCII slug.');
 const text = (max) => z.string().trim().min(1).max(max);
-export const topics = {
-  culture: 'فرهنگ و جامعه',
-  literature: 'هنر و ادبیات',
-  campus: 'زندگی دانشجویی',
-  science: 'علم و فناوری',
-};
-export const topicSchema = z.enum(['culture', 'literature', 'campus', 'science']);
 
 export function isLocalAsset(value) {
   return /^\/(?:images|covers|downloads|audio)\/[a-zA-Z0-9_./-]+$/.test(value)
@@ -41,7 +34,7 @@ export const authorSchema = z.object({
 export const issueSchema = z.object({
   title: text(140),
   number: z.number().int().positive().optional(),
-  kind: z.enum(['regular', 'special']),
+  kind: z.enum(['regular', 'special', 'scientific']),
   order: z.number().int(),
   dateLabel: text(70).optional(),
   description: text(600),
@@ -51,6 +44,7 @@ export const issueSchema = z.object({
   pdfPages: z.number().int().positive(),
   pdfBytes: z.number().int().positive(),
   draft: z.boolean().default(false),
+  homepageArticles: z.array(slugSchema).max(3).default([]),
   tocLabel: text(100).default('در این شماره'),
   toc: z.array(z.object({
     title: text(180),
@@ -65,7 +59,6 @@ export const articleSchema = z.object({
   description: text(350),
   authors: z.array(slugSchema).min(1),
   issue: slugSchema,
-  topics: z.array(topicSchema).min(1),
   order: z.number().int().nonnegative().default(0),
   draft: z.boolean().default(true),
   format: z.enum(['article', 'poem']).default('article'),

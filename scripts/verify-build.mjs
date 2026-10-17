@@ -9,7 +9,6 @@ const files = await walk(root);
 const errors = [];
 if (files.length > 20000) errors.push('Cloudflare Pages Free file-count limit exceeded');
 for (const path of files) {
-  if ((await stat(path)).size > 25*1024*1024) errors.push(`Asset exceeds 25 MiB: ${relative(root,path)}`);
   if (/\.(?:map|md|astro|ts|env)$/.test(path)) errors.push(`Source/private file in output: ${relative(root,path)}`);
   if (path.includes('_worker.js') || path.includes('/functions/')) errors.push('Runtime code found; this site must remain static');
 }

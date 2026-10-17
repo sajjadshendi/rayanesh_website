@@ -7,7 +7,7 @@ export default function rehypeReading() {
       }
       if (node.tagName === 'img') node.properties = { ...node.properties, loading: 'lazy', decoding: 'async' };
       if (node.tagName === 'table' && parent && typeof index === 'number') {
-        parent.children[index] = { type: 'element', tagName: 'div', properties: { className: ['table-scroll'], tabIndex: 0, role: 'region', 'aria-label': 'جدول؛ در صفحهٔ کوچک به چپ یا راست پیمایش کنید' }, children: [node] };
+        parent.children[index] = { type: 'element', tagName: 'div', properties: { className: ['table-scroll'], tabIndex: 0, role: 'region', 'aria-label': 'جدول؛ در صفحه کوچک به چپ یا راست پیمایش کنید' }, children: [node] };
         return SKIP;
       }
     });

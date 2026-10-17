@@ -1,13 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
-import { getCatalog, issueLabel, topics } from '../lib/catalog';
+import { getCatalog, issueByline } from '../lib/catalog';
 const { issues } = await getCatalog();
 const suggestions = [
-  { href: '/topics/science/', label: topics.science },
-  { href: '/topics/campus/', label: topics.campus },
-  { href: '/topics/culture/', label: topics.culture },
-  { href: '/topics/literature/', label: topics.literature },
+  { href: '/articles/', label: 'نوشته‌ها' },
+  { href: '/issues/', label: 'شماره‌ها' },
+  { href: '/authors/', label: 'نویسندگان' },
 ];
 ---
 <Base title="جست‌وجو" description="جست‌وجو در نوشته‌ها، نویسندگان و شماره‌های رایانش." noindex>
@@ -32,15 +31,15 @@ const suggestions = [
           <label class="filter-chip"><input class="sr-only" type="radio" name="type" value="شماره" /> شماره‌ها</label>
           <label class="filter-chip"><input class="sr-only" type="radio" name="type" value="نویسنده" /> نویسندگان</label>
         </div>
-        <label class="search-issue-label" for="search-issue">شمارهٔ مجله</label>
+        <label class="search-issue-label" for="search-issue">شماره مجله</label>
         <select id="search-issue" name="issue">
-          <option value="">همهٔ شماره‌ها</option>
-          {issues.map(issue => <option value={issue.id}>{issueLabel(issue)}{issue.data.dateLabel ? ` · ${issue.data.dateLabel}` : ''}</option>)}
+          <option value="">همه شماره‌ها</option>
+          {issues.map(issue => <option value={issue.id}>{issueByline(issue, ' · ')}</option>)}
         </select>
       </fieldset>
     </form>
-    <nav class="search-suggest" aria-label="موضوع‌های پرخواننده">
-      <p>برای شروع، یکی از موضوع‌های پرخواننده را باز کنید یا عبارتی بنویسید.</p>
+    <nav class="search-suggest" aria-label="شروع جست‌وجو">
+      <p>برای شروع، یکی از بخش‌های سایت را باز کنید یا عبارتی بنویسید.</p>
       <div class="search-suggest-list">
         {suggestions.map(item => <a class="topic-chip" href={item.href}>{item.label}</a>)}
       </div>

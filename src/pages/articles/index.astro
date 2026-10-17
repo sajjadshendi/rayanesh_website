@@ -1,23 +1,73 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ArticleRow from '../../components/ArticleRow.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
-import TopicNav from '../../components/TopicNav.astro';
-import { getCatalog, fa } from '../../lib/catalog';
-const { articles, authorMap, issueMap } = await getCatalog();
+import { getCatalog, fa, issueLabel } from '../../lib/catalog';
+const { articles, authorMap, issueMap, issues } = await getCatalog();
+const countByIssue = new Map<string, number>();
+for (const article of articles) countByIssue.set(article.data.issue, (countByIssue.get(article.data.issue) ?? 0) + 1);
+const regular = issues.filter(issue => issue.data.kind === 'regular');
+const special = issues.filter(issue => issue.data.kind === 'special');
+const scientific = issues.filter(issue => issue.data.kind === 'scientific');
+const findText = (article: (typeof articles)[number]) => {
+  const issue = issueMap.get(article.data.issue);
+  return [
+    article.data.title,
+    article.data.description,
+    ...article.data.authors.map(id => authorMap.get(id)?.data.name ?? ''),
+    issue ? issueLabel(issue) : '',
+  ].join(' ');
+};
 ---
 <Base title="نوشته‌ها" description="روایت‌ها، مقاله‌ها و یادداشت‌های علمی و فرهنگی رایانش.">
-  <div class="shell page">
+  <div class="shell page articles-page">
     <Breadcrumb items={[{ label: 'نوشته‌ها' }]} />
-    <header class="page-heading">
-      <p class="eyebrow">از زندگی تا علم</p>
+    <header class="page-heading page-heading-tight">
       <h1>نوشته‌ها</h1>
-      <p>هر بار از یک دریچه. {fa(articles.length)} نوشته برای شروع خواندن.</p>
+      <p>{fa(articles.length)} نوشته در این گنجه در دسترس هستند.</p>
     </header>
-    <TopicNav />
-    {articles.length
-      ? <div class="article-list">{articles.map(article => <ArticleRow article={article} authorMap={authorMap} issueMap={issueMap} />)}</div>
-      : <p class="empty-state">هنوز نوشته‌ای در آرشیو وب نیست. می‌توانید <a href="/issues/">شماره‌های مجله</a> را ورق بزنید.</p>}
-    {articles.length > 0 && <p class="list-end" role="status">پایان فهرست · {fa(articles.length)} نوشته در آرشیو وب</p>}
+    <div class="articles-layout" data-articles>
+      <aside class="issue-shelf" aria-label="انتخاب شماره یا ویژه‌نامه">
+        {regular.length > 0 && (
+          <div class="issue-shelf-group">
+            <h2>شماره‌ها</h2>
+            <ul>{regular.map(issue => (
+              <li><a href={`/articles/?issue=${issue.id}`} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
+            ))}</ul>
+          </div>
+        )}
+        {special.length > 0 && (
+          <div class="issue-shelf-group">
+            <h2>ویژه‌نامه‌ها</h2>
+            <ul>{special.map(issue => (
+              <li><a href={`/articles/?issue=${issue.id}`} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
+            ))}</ul>
+          </div>
+        )}
+        <div class="issue-shelf-group">
+          <h2>ویژه‌نامه‌های علمی</h2>
+          {scientific.length > 0
+            ? <ul>{scientific.map(issue => (
+              <li><a href={`/articles/?issue=${issue.id}`} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
+            ))}</ul>
+            : <p class="issue-shelf-empty">هنوز ویژه‌نامه‌ای نیست</p>}
+        </div>
+      </aside>
+      <div class="articles-main">
+        <form class="articles-find" action="/articles/" method="get" role="search">
+          <label class="sr-only" for="articles-find">جست‌وجو در نوشته‌ها</label>
+          <input id="articles-find" name="q" type="search" placeholder={`${fa(articles.length)} نوشته`} maxlength="160" autocomplete="off" spellcheck="false" enterkeyhint="search" />
+        </form>
+        <div class="articles-grid">
+          {articles.map(article => (
+            <div data-card data-issue={article.data.issue} data-find={findText(article)}>
+              <ArticleCard article={article} authorMap={authorMap} issueMap={issueMap} media={false} />
+            </div>
+          ))}
+        </div>
+        <p class="empty-state" data-articles-empty hidden>نوشته‌ای با این انتخاب پیدا نشد. انتخاب را عوض کنید یا عبارت دیگری بجویید.</p>
+      </div>
+    </div>
   </div>
+  <script src="../../scripts/articles.ts"></script>
 </Base>

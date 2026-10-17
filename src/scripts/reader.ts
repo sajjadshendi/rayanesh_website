@@ -9,7 +9,7 @@ function applySize(announce = false) {
   document.documentElement.style.setProperty('--reader-size', `${size / 16}rem`);
   if (increase) increase.disabled = size >= 24;
   if (decrease) decrease.disabled = size <= 16;
-  if (announce && status) status.textContent = `اندازهٔ متن: ${size.toLocaleString('fa-IR')}`;
+  if (announce && status) status.textContent = `اندازه متن: ${size.toLocaleString('fa-IR')}`;
 }
 if (controls) { controls.hidden = false; applySize(); }
 for (const [button, step] of [[increase, 1], [decrease, -1]] as const) button?.addEventListener('click', () => {
