@@ -1,4 +1,7 @@
 ---
+import { themeInit, themeHash } from '../lib/theme.mjs';
+import vazirmatnArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url';
+import naskhArabic from '@fontsource-variable/noto-naskh-arabic/files/noto-naskh-arabic-arabic-wght-normal.woff2?url';
 import { withBase, withoutBase } from '../lib/paths';
 import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/noto-naskh-arabic';
@@ -22,7 +25,7 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
 <html lang="fa" dir="rtl" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; script-src-attr 'none'; worker-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests" />
+    <meta http-equiv="Content-Security-Policy" content={`default-src 'self'; script-src 'self' '${themeHash}'; script-src-attr 'none'; worker-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests`} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
@@ -40,7 +43,9 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href={withBase('/images/rayanesh-logo.png')} />
     {Astro.site && <link rel="alternate" type="application/rss+xml" title="تازه‌های رایانش" href={withBase('/rss.xml')} />}
-    <script is:inline src={withBase('/theme-init.js')}></script>
+    <link rel="preload" href={withBase(vazirmatnArabic)} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={withBase(naskhArabic)} as="font" type="font/woff2" crossorigin="anonymous" />
+    <script is:inline set:html={themeInit}></script>
   </head>
   <body>
     <a class="skip-link" href="#main">رفتن به محتوای صفحه</a>
