@@ -33,7 +33,7 @@ const findText = (article: (typeof articles)[number]) => {
           <div class="issue-shelf-group">
             <h2>شماره‌ها</h2>
             <ul>{regular.map(issue => (
-              <li><a href={withBase(`/articles/?issue=${issue.id}`)} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
+              <li><a data-astro-prefetch href={withBase(`/articles/?issue=${issue.id}`)} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
             ))}</ul>
           </div>
         )}
@@ -41,7 +41,7 @@ const findText = (article: (typeof articles)[number]) => {
           <div class="issue-shelf-group">
             <h2>ویژه‌نامه‌ها</h2>
             <ul>{special.map(issue => (
-              <li><a href={withBase(`/articles/?issue=${issue.id}`)} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
+              <li><a data-astro-prefetch href={withBase(`/articles/?issue=${issue.id}`)} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
             ))}</ul>
           </div>
         )}
@@ -49,7 +49,7 @@ const findText = (article: (typeof articles)[number]) => {
           <h2>ویژه‌نامه‌های علمی</h2>
           {scientific.length > 0
             ? <ul>{scientific.map(issue => (
-              <li><a href={withBase(`/articles/?issue=${issue.id}`)} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
+              <li><a data-astro-prefetch href={withBase(`/articles/?issue=${issue.id}`)} data-issue={issue.id}>{issueLabel(issue)} <span>{fa(countByIssue.get(issue.id) ?? 0)}</span></a></li>
             ))}</ul>
             : <p class="issue-shelf-empty">هنوز ویژه‌نامه‌ای نیست</p>}
         </div>
