@@ -2,6 +2,7 @@ import { readdir, readFile, stat } from 'node:fs/promises';
 import { resolve, relative, extname } from 'node:path';
 import { parseHTML } from 'linkedom';
 import { isSafeLink } from '../src/lib/content-schema.mjs';
+import { themeInit, themeHash } from '../src/lib/theme.mjs';
 import { loadSources } from './validate-content.mjs';
 
 const root = resolve('dist');
@@ -32,7 +33,8 @@ for (const path of files.filter(p => extname(p) === '.html')) {
   if (!document.querySelector('main#main') || !document.title) errors.push(`${name}: missing landmarks/title`);
   const ids = [...document.querySelectorAll('[id]')].map(e => e.id);
   if (new Set(ids).size !== ids.length) errors.push(`${name}: duplicate element ids`);
-  for (const node of document.querySelectorAll('script')) if (!node.getAttribute('src')) errors.push(`${name}: inline script blocked by CSP`);
+  const inlineScripts = [...document.querySelectorAll('script')].filter(node => !node.getAttribute('src'));
+  if (inlineScripts.length !== 1 || inlineScripts[0].textContent !== themeInit) errors.push(`${name}: unexpected or missing theme bootstrap`);
   for (const img of document.querySelectorAll('img')) if (!img.hasAttribute('alt')) errors.push(`${name}: missing image alt`);
   for (const pre of document.querySelectorAll('.prose pre')) if (!pre.hasAttribute('tabindex')) errors.push(`${name}: code scroller not keyboard accessible`);
 }
@@ -69,7 +71,7 @@ for (const [path, doc] of documents) {
   if (doc.querySelector('meta[http-equiv="refresh"]')) continue;
   const csp = doc.querySelector('meta[http-equiv="Content-Security-Policy"]')?.getAttribute('content') || '';
   const directives = csp.split(';').map(value => value.trim());
-  if (!["default-src 'self'", "script-src 'self'", "script-src-attr 'none'", "worker-src 'none'", "object-src 'none'", "base-uri 'none'"].every(value => directives.includes(value)) || /'unsafe-eval'/.test(csp)) errors.push(`${relative(root,path)}: CSP missing or weakened`);
+  if (!["default-src 'self'", `script-src 'self' '${themeHash}'`, "script-src-attr 'none'", "worker-src 'none'", "object-src 'none'", "base-uri 'none'"].every(value => directives.includes(value)) || /'unsafe-eval'/.test(csp)) errors.push(`${relative(root,path)}: CSP missing or weakened`);
 }
 if (!files.some(p => relative(root,p) === '404.html')) errors.push('GitHub Pages needs a top-level 404.html');
 if (errors.length) throw new Error(`Build verification failed:\n${errors.join('\n')}`);
