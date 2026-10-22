@@ -22,6 +22,8 @@ export default defineConfig({
   site,
   base,
   output: 'static',
+  // Opt in only HTML navigation links; never prefetch magazine PDFs or audio.
+  prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   redirects: { '/topics': `${base}articles/` },
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'never' },

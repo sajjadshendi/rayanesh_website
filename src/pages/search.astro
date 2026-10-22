@@ -42,13 +42,13 @@ const suggestions = [
     <nav class="search-suggest" aria-label="شروع جست‌وجو">
       <p>برای شروع، یکی از بخش‌های سایت را باز کنید یا عبارتی بنویسید.</p>
       <div class="search-suggest-list">
-        {suggestions.map(item => <a class="topic-chip" href={withBase(item.href)}>{item.label}</a>)}
+        {suggestions.map(item => <a data-astro-prefetch class="topic-chip" href={withBase(item.href)}>{item.label}</a>)}
       </div>
     </nav>
     <p id="search-status" role="status" aria-live="polite" class="muted">عبارتی بنویسید تا میان نوشته‌ها، شماره‌ها و نویسندگان بگردیم.</p>
     <ol id="search-results" class="search-results"></ol>
     <noscript>
-      <p>جست‌وجو به جاوااسکریپت نیاز دارد. می‌توانید از <a href={withBase('/articles/')}>فهرست نوشته‌ها</a>، <a href={withBase('/authors/')}>نویسندگان</a> یا <a href={withBase('/issues/')}>آرشیو شماره‌ها</a> استفاده کنید.</p>
+      <p>جست‌وجو به جاوااسکریپت نیاز دارد. می‌توانید از <a data-astro-prefetch href={withBase('/articles/')}>فهرست نوشته‌ها</a>، <a data-astro-prefetch href={withBase('/authors/')}>نویسندگان</a> یا <a data-astro-prefetch href={withBase('/issues/')}>آرشیو شماره‌ها</a> استفاده کنید.</p>
     </noscript>
   </div>
   <script src="../scripts/search.ts"></script>

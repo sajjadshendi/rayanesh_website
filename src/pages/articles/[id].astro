@@ -25,8 +25,8 @@ const next = index >= 0 ? siblings[index + 1] : undefined;
         <h1 itemprop="headline">{article.data.title}</h1>
         <p class="deck" itemprop="description">{article.data.description}</p>
         <div class="reading-meta">
-          <p>{article.data.authors.map((id, i) => <><a href={withBase(`/authors/${id}/`)} itemprop="author">{authorMap.get(id)!.data.name}</a>{i < article.data.authors.length - 1 && '، '}</>)}</p>
-          <a href={withBase(`/issues/${issue.id}/`)}>{issue.data.kind === 'regular' ? `${issueLabel(issue)} · ${issue.data.title}` : issueLabel(issue)}</a>
+          <p>{article.data.authors.map((id, i) => <><a data-astro-prefetch href={withBase(`/authors/${id}/`)} itemprop="author">{authorMap.get(id)!.data.name}</a>{i < article.data.authors.length - 1 && '، '}</>)}</p>
+          <a data-astro-prefetch href={withBase(`/issues/${issue.id}/`)}>{issue.data.kind === 'regular' ? `${issueLabel(issue)} · ${issue.data.title}` : issueLabel(issue)}</a>
           {article.data.publishedAt && <time datetime={article.data.publishedAt} itemprop="datePublished">{new Date(article.data.publishedAt).toLocaleDateString('fa-IR', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })}</time>}
         </div>
       </header>
@@ -64,13 +64,13 @@ const next = index >= 0 ? siblings[index + 1] : undefined;
           {(previous || next) && (
             <nav class="article-neighbors" aria-label="نوشته قبلی و بعدی">
               {previous && (
-                <a class="article-neighbor article-neighbor-prev" href={withBase(`/articles/${previous.id}/`)}>
+                <a data-astro-prefetch class="article-neighbor article-neighbor-prev" href={withBase(`/articles/${previous.id}/`)}>
                   <span class="article-neighbor-label">قبلی <Arrow class="icon-arrow-prev" /></span>
                   <strong>{previous.data.title}</strong>
                 </a>
               )}
               {next && (
-                <a class="article-neighbor article-neighbor-next" href={withBase(`/articles/${next.id}/`)}>
+                <a data-astro-prefetch class="article-neighbor article-neighbor-next" href={withBase(`/articles/${next.id}/`)}>
                   <span class="article-neighbor-label">بعدی <Arrow /></span>
                   <strong>{next.data.title}</strong>
                 </a>

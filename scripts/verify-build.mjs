@@ -35,6 +35,13 @@ for (const path of files.filter(p => extname(p) === '.html')) {
   if (new Set(ids).size !== ids.length) errors.push(`${name}: duplicate element ids`);
   const inlineScripts = [...document.querySelectorAll('script')].filter(node => !node.getAttribute('src'));
   if (inlineScripts.length !== 1 || inlineScripts[0].textContent !== themeInit) errors.push(`${name}: unexpected or missing theme bootstrap`);
+  // Prefetch is limited to same-origin HTML pages, never large downloads or external links.
+  for (const link of document.querySelectorAll('a[data-astro-prefetch]')) {
+    const href = link.getAttribute('href') || '';
+    const target = new URL(href, 'https://build.invalid');
+    if (!href.startsWith(`${prefix}/`) || target.origin !== 'https://build.invalid'
+      || !target.pathname.endsWith('/')) errors.push(`${name}: non-page prefetch target ${href}`);
+  }
   for (const img of document.querySelectorAll('img')) if (!img.hasAttribute('alt')) errors.push(`${name}: missing image alt`);
   for (const pre of document.querySelectorAll('.prose pre')) if (!pre.hasAttribute('tabindex')) errors.push(`${name}: code scroller not keyboard accessible`);
 }

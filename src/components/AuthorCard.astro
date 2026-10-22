@@ -9,7 +9,7 @@ const Heading = level === 3 ? 'h3' : 'h2';
 <article class:list={['author-card', { 'with-bio': bio }]}>
   <Avatar author={author} size="md" />
   <div class="author-card-body">
-    <Heading class="author-name"><a href={withBase(`/authors/${author.id}/`)}>{author.data.name}</a></Heading>
+    <Heading class="author-name"><a data-astro-prefetch href={withBase(`/authors/${author.id}/`)}>{author.data.name}</a></Heading>
     {bio && <p class="author-bio">{author.data.bio}</p>}
     <p class="author-count pill">{fa(count)} نوشته در رایانش</p>
   </div>

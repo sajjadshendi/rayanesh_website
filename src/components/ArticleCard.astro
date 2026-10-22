@@ -12,20 +12,20 @@ const first = writers[0];
 ---
 <article class:list={['article-card', { 'article-card-text': !media }, className]}>
   {media && (
-    <a class="card-media" href={withBase(href)} tabindex="-1" aria-hidden="true">
+    <a data-astro-prefetch class="card-media" href={withBase(href)} tabindex="-1" aria-hidden="true">
       {article.data.image
         ? <img src={withBase(article.data.image)} alt="" width="798" height="449" loading="lazy" decoding="async" />
         : issue && <img class="card-cover-crop" src={withBase(issue.data.cover)} alt="" width="798" height="449" loading="lazy" decoding="async" />}
       {issue && <img class="card-cover-full" src={withBase(issue.data.cover)} alt="" width="750" height="1060" loading="lazy" decoding="async" />}
     </a>
   )}
-  <Heading class="card-title"><a href={withBase(href)}>{article.data.title}</a></Heading>
+  <Heading class="card-title"><a data-astro-prefetch href={withBase(href)}>{article.data.title}</a></Heading>
   <p class="card-summary">{article.data.description}</p>
   <p class="card-meta">
     <span class="author-chip">
       <Avatar author={first} />
-      <span class="card-authors">{writers.map((writer, i) => <><a href={withBase(`/authors/${article.data.authors[i]}/`)}>{writer.data.name}</a>{i < writers.length - 1 && '، '}</>)}</span>
+      <span class="card-authors">{writers.map((writer, i) => <><a data-astro-prefetch href={withBase(`/authors/${article.data.authors[i]}/`)}>{writer.data.name}</a>{i < writers.length - 1 && '، '}</>)}</span>
     </span>
-    {issue && <a class="card-issue" href={withBase(`/issues/${issue.id}/`)}>{issueLabel(issue)}</a>}
+    {issue && <a data-astro-prefetch class="card-issue" href={withBase(`/issues/${issue.id}/`)}>{issueLabel(issue)}</a>}
   </p>
 </article>

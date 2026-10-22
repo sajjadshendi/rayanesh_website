@@ -42,7 +42,7 @@ const showEyebrow = true;
             <span class="index-number" aria-hidden="true">{fa(index + 1)}</span>
             <div>
               {linkArticles && entry.article
-                ? <h3><a href={withBase(`/articles/${entry.article}/`)}>{entry.title}</a></h3>
+                ? <h3><a data-astro-prefetch href={withBase(`/articles/${entry.article}/`)}>{entry.title}</a></h3>
                 : <h3>{entry.title}</h3>}
             </div>
           </li>

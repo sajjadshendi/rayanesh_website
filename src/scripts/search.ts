@@ -65,6 +65,7 @@ async function search() {
       const h2 = document.createElement('h2');
       const a = document.createElement('a');
       a.href = entry.url;
+      a.dataset.astroPrefetch = 'hover';
       a.textContent = entry.title;
       h2.append(a);
       const p = document.createElement('p');

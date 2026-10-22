@@ -12,7 +12,7 @@ const href = `/issues/${issue.id}/`;
     <img src={withBase(issue.data.cover)} alt="" width="750" height="1060" loading="lazy" decoding="async" />
   </div>
   <div class="issue-card-meta">
-    <Heading class="issue-title"><a href={withBase(href)}>{issue.data.title}</a></Heading>
+    <Heading class="issue-title"><a data-astro-prefetch href={withBase(href)}>{issue.data.title}</a></Heading>
     {(issue.data.kind === 'regular' || issue.data.dateLabel) && <p class="issue-date">{issueByline(issue)}</p>}
     <p class="issue-icons">
       <a class="issue-pdf" href={withBase(issue.data.pdf)} aria-label={`دریافت PDF ${issue.data.title}`} title="دریافت PDF">
