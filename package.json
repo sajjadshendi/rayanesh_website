@@ -16,23 +16,23 @@
     "new": "node scripts/new-content.mjs"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "7.3.1",
+    "@astrojs/markdown-remark": "7.3.4",
     "@fontsource-variable/noto-naskh-arabic": "5.3.0",
     "@fontsource-variable/vazirmatn": "5.3.0",
-    "astro": "7.3.3",
-    "katex": "0.18.7",
+    "astro": "7.4.2",
+    "katex": "0.19.0",
     "rehype-katex": "7.0.1",
     "remark-math": "6.0.0"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.10",
-    "linkedom": "0.18.13",
+    "@astrojs/check": "0.9.12",
+    "linkedom": "0.18.14",
     "remark-gfm": "4.0.1",
     "remark-parse": "11.0.0",
     "typescript": "6.0.3",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
-    "zod": "4.6.5",
+    "zod": "4.6.7",
     "js-yaml": "4.3.2"
   },
   "overrides": {
