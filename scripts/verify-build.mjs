@@ -19,7 +19,7 @@ const documents = new Map();
 for (const path of files.filter(p => extname(p) === '.html')) {
   const html = await readFile(path,'utf8');
   const { document } = parseHTML(html); documents.set(path,document);
-  const name = relative(root,path);
+  const name = relative(root,path).replaceAll('\\', '/');
   for (const node of document.querySelectorAll('*')) for (const attr of node.attributes) if (/^on/i.test(attr.name)) errors.push(`${name}: inline event handler`);
   const refresh = document.querySelector('meta[http-equiv="refresh"]');
   if (refresh) {
@@ -42,7 +42,17 @@ for (const path of files.filter(p => extname(p) === '.html')) {
     if (!href.startsWith(`${prefix}/`) || target.origin !== 'https://build.invalid'
       || !target.pathname.endsWith('/')) errors.push(`${name}: non-page prefetch target ${href}`);
   }
-  for (const img of document.querySelectorAll('img')) if (!img.hasAttribute('alt')) errors.push(`${name}: missing image alt`);
+  for (const img of document.querySelectorAll('img')) {
+    if (!img.hasAttribute('alt')) errors.push(`${name}: missing image alt`);
+    if (img.hasAttribute('srcset')) {
+      if (!img.hasAttribute('sizes') || !img.hasAttribute('width') || !img.hasAttribute('height')) errors.push(`${name}: responsive image missing dimensions/sizes`);
+      for (const candidate of img.getAttribute('srcset').split(',')) {
+        const [url, descriptor] = candidate.trim().split(/\s+/);
+        const local = url.slice(prefix.length);
+        if (!url.startsWith(`${prefix}/_astro/`) || !/^\d+w$/.test(descriptor || '') || !await stat(resolve(root, `.${local}`)).then(s => s.isFile()).catch(() => false)) errors.push(`${name}: invalid responsive image ${candidate}`);
+      }
+    }
+  }
   for (const pre of document.querySelectorAll('.prose pre')) if (!pre.hasAttribute('tabindex')) errors.push(`${name}: code scroller not keyboard accessible`);
 }
 for (const [path,doc] of documents) {

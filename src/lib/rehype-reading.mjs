@@ -1,7 +1,9 @@
 import { visit, SKIP } from 'unist-util-visit';
 export default function rehypeReading({ base = '/' } = {}) {
-  return tree => {
+  return (tree, file) => {
+    let hasMath = false;
     visit(tree, 'element', (node, index, parent) => {
+      if (node.properties?.className?.includes('katex')) hasMath = true;
       for (const key of ['href', 'src']) {
         const value = node.properties?.[key];
         if (typeof value === 'string' && value.startsWith('/') && !value.startsWith('//')) {
@@ -17,5 +19,8 @@ export default function rehypeReading({ base = '/' } = {}) {
         return SKIP;
       }
     });
+    file.data.astro ??= {};
+    file.data.astro.frontmatter ??= {};
+    file.data.astro.frontmatter.hasMath = hasMath;
   };
 }

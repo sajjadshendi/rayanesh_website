@@ -7,8 +7,8 @@ import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/noto-naskh-arabic';
 import '../styles/global.css';
 import { site, getCatalog } from '../lib/catalog';
-interface Props { title?: string; description?: string; image?: string; article?: boolean; noindex?: boolean }
-const { title, description = site.description, image, article = false, noindex = false } = Astro.props;
+interface Props { title?: string; description?: string; image?: string; article?: boolean; noindex?: boolean; mathStyles?: string }
+const { title, description = site.description, image, article = false, noindex = false, mathStyles } = Astro.props;
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} — نشریه علمی و فرهنگی`;
 const path = withoutBase(Astro.url.pathname);
 const blocked = noindex || !Astro.site;
@@ -45,6 +45,7 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
     {Astro.site && <link rel="alternate" type="application/rss+xml" title="تازه‌های رایانش" href={withBase('/rss.xml')} />}
     <link rel="preload" href={withBase(vazirmatnArabic)} as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="preload" href={withBase(naskhArabic)} as="font" type="font/woff2" crossorigin="anonymous" />
+    {mathStyles && <link rel="stylesheet" href={withBase(mathStyles)} />}
     <script is:inline set:html={themeInit}></script>
   </head>
   <body>
@@ -56,7 +57,7 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
           <span class="brand-line" aria-hidden="true">نشریه علمی و فرهنگی دانشکده مهندسی کامپیوتر شریف</span>
         </a>
         <nav class="site-nav" id="site-nav" aria-label="منوی اصلی">
-          {primaryNav.map(item => <a data-astro-prefetch="viewport" href={withBase(item.href)} aria-current={isPrimaryCurrent(item) ? 'page' : undefined}>{item.label}</a>)}
+          {primaryNav.map(item => <a data-astro-prefetch href={withBase(item.href)} aria-current={isPrimaryCurrent(item) ? 'page' : undefined}>{item.label}</a>)}
         </nav>
         <div class="nav-tools">
           <a data-astro-prefetch href={withBase('/articles/#find')} class="tool-button" aria-label="جست‌وجو در نوشته‌ها"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m20 20-4.8-4.8" /></svg></a>
