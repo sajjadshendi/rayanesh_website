@@ -1,4 +1,8 @@
-export {};
+// Older Safari exposes only the legacy MediaQueryList listener API.
+function onMediaChange(query: MediaQueryList, listener: (event: MediaQueryListEvent) => void) {
+  if (typeof query.addEventListener === 'function') query.addEventListener('change', listener);
+  else query.addListener(listener);
+}
 const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
 function savedTheme() {
@@ -20,7 +24,7 @@ if (toggle) {
     updateLabel();
   });
 }
-systemDark.addEventListener('change', event => {
+onMediaChange(systemDark, event => {
   if (savedTheme()) return;
   document.documentElement.dataset.theme = event.matches ? 'dark' : 'light';
   updateLabel();
@@ -38,7 +42,7 @@ if (masthead && menuToggle) {
   menuToggle.hidden = false;
   setMenu(false);
   const mobileMenu = matchMedia('(max-width: 860px)');
-  mobileMenu.addEventListener('change', () => {
+  onMediaChange(mobileMenu, () => {
     const focusWasInNav = Boolean(document.activeElement?.closest('#site-nav'));
     const focusWasOnToggle = document.activeElement === menuToggle;
     setMenu(false);

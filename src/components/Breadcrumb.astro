@@ -1,6 +1,9 @@
 ---
 import { withBase } from '../lib/paths';
+import { site } from '../lib/catalog';
 interface Props { items: { href?: string; label: string }[] }
 const { items } = Astro.props;
+const crumbs = [{ href: '/', label: site.name }, ...items];
+const url = (href: string) => Astro.site ? new URL(withBase(href), Astro.site).href : withBase(href);
 ---
-<nav class="breadcrumb" aria-label="مسیر صفحه"><ol><li><a data-astro-prefetch href={withBase('/')}>رایانش</a></li>{items.map(item => <li>{item.href ? <a data-astro-prefetch href={withBase(item.href)}>{item.label}</a> : <span aria-current="page">{item.label}</span>}</li>)}</ol></nav>
+<nav class="breadcrumb" aria-label="مسیر صفحه"><ol itemscope itemtype="https://schema.org/BreadcrumbList">{crumbs.map((item, index) => <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><meta itemprop="position" content={String(index + 1)} />{item.href ? <a data-astro-prefetch href={withBase(item.href)} itemprop="item"><span itemprop="name">{item.label}</span></a> : <><span aria-current="page" itemprop="name">{item.label}</span><meta itemprop="item" content={url(Astro.url.pathname)} /></>}</li>)}</ol></nav>

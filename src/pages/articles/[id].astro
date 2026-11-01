@@ -5,7 +5,7 @@ import mathStyles from 'katex/dist/katex.min.css?url';
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import Arrow from '../../components/Arrow.astro';
-import { getCatalog, issueLabel } from '../../lib/catalog';
+import { getCatalog, issueLabel, site } from '../../lib/catalog';
 export async function getStaticPaths() { const { articles } = await getCatalog(); return articles.map(article => ({ params: { id: article.id }, props: { article } })); }
 const { article } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(article);
@@ -14,20 +14,28 @@ const issue = issueMap.get(article.data.issue)!;
 const sections = headings.filter(h => (h.depth === 2 || h.depth === 3) && h.slug !== 'footnote-label');
 const siblings = articles.filter(item => item.data.issue === article.data.issue);
 const index = siblings.findIndex(item => item.id === article.id);
+const seoTitle = articles.some(item => item.id !== article.id && item.data.title === article.data.title)
+  ? article.data.title + '؛ ' + issueLabel(issue) : article.data.title;
 const previous = index > 0 ? siblings[index - 1] : undefined;
 const next = index >= 0 ? siblings[index + 1] : undefined;
 ---
-<Base title={article.data.title} description={article.data.description} image={article.data.image || issue.data.cover} article mathStyles={remarkPluginFrontmatter.hasMath ? mathStyles : undefined}>
+<Base title={seoTitle} description={article.data.description} image={article.data.image || issue.data.cover} imageAlt={article.data.imageAlt || issue.data.coverAlt} article entity={{
+  '@type': 'Article', headline: article.data.title, description: article.data.description, inLanguage: 'fa-IR',
+  image: Astro.site ? new URL(withBase(article.data.image || issue.data.cover), Astro.site).href : undefined,
+  ...(article.data.publishedAt ? { datePublished: article.data.publishedAt } : {}),
+  author: article.data.authors.map(id => ({ '@type': id === 'rayanesh-editorial-team' ? 'Organization' : 'Person', name: authorMap.get(id)!.data.name, url: Astro.site ? new URL(withBase('/authors/' + id + '/'), Astro.site).href : undefined })),
+  publisher: { '@id': Astro.site ? new URL(withBase('/'), Astro.site).href + '#organization' : undefined, '@type': 'Organization', name: site.name },
+}} mathStyles={remarkPluginFrontmatter.hasMath ? mathStyles : undefined}>
   <div class="shell page article-page">
     <Breadcrumb items={[{ href: '/articles/', label: 'نوشته‌ها' }, { label: article.data.title }]} />
-    <article itemscope itemtype="https://schema.org/Article">
+    <article>
       <header class="reading-header">
-        <h1 itemprop="headline">{article.data.title}</h1>
-        <p class="deck" itemprop="description">{article.data.description}</p>
+        <h1>{article.data.title}</h1>
+        <p class="deck">{article.data.description}</p>
         <div class="reading-meta">
-          <p>{article.data.authors.map((id, i) => <><a data-astro-prefetch href={withBase(`/authors/${id}/`)} itemprop="author">{authorMap.get(id)!.data.name}</a>{i < article.data.authors.length - 1 && '، '}</>)}</p>
+          <p>{article.data.authors.map((id, i) => <><a data-astro-prefetch href={withBase(`/authors/${id}/`)}>{authorMap.get(id)!.data.name}</a>{i < article.data.authors.length - 1 && '، '}</>)}</p>
           <a data-astro-prefetch href={withBase(`/issues/${issue.id}/`)}>{issue.data.kind === 'regular' ? `${issueLabel(issue)} · ${issue.data.title}` : issueLabel(issue)}</a>
-          {article.data.publishedAt && <time datetime={article.data.publishedAt} itemprop="datePublished">{new Date(article.data.publishedAt).toLocaleDateString('fa-IR', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })}</time>}
+          {article.data.publishedAt && <time datetime={article.data.publishedAt}>{new Date(article.data.publishedAt).toLocaleDateString('fa-IR', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })}</time>}
         </div>
       </header>
       {article.data.image && <figure class="article-image"><img src={withBase(article.data.image)} alt={article.data.imageAlt} width="798" height="665" decoding="async" />{article.data.imageCredit && <figcaption>{article.data.imageCredit}</figcaption>}</figure>}
@@ -60,7 +68,7 @@ const next = index >= 0 ? siblings[index + 1] : undefined;
               <p class="small">متن خوانش در ادامه همین صفحه آمده است.</p>
             </figure>
           )}
-          <div class:list={['prose', { poem: article.data.format === 'poem' }]} itemprop="articleBody"><Content /></div>
+          <div class:list={['prose', { poem: article.data.format === 'poem' }]}><Content /></div>
           {(previous || next) && (
             <nav class="article-neighbors" aria-label="نوشته قبلی و بعدی">
               {previous && (

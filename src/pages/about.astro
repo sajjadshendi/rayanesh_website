@@ -3,7 +3,7 @@ import { withBase } from '../lib/paths';
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 ---
-<Base title="درباره رایانش">
+<Base title="درباره نشریه رایانش" description="با نشریه رایانش آشنا شوید؛ نشریه علمی و فرهنگی دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف و خانه‌ای سبز برای شعر، ادب و روایت.">
   <div class="shell page about-page">
     <Breadcrumb items={[{ label: 'درباره رایانش' }]} />
     <header class="page-heading">
@@ -11,7 +11,7 @@ import Breadcrumb from '../components/Breadcrumb.astro';
     </header>
     <div class="prose">
       <p>نشریه‌ای از جنس شعر و ادب هستیم با اتاقی سبز‌رنگ در همکف دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف</p>
-      <img src={withBase('/images/rayanesh-room.jpg')} alt="اتاق نشریه رایانش" />
+      <img width="1920" height="2560" decoding="async" src={withBase('/images/rayanesh-room.jpg')} alt="اتاق نشریه رایانش" />
     </div>
   </div>
 </Base>

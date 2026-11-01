@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { resolve, relative, extname } from 'node:path';
 import { parseHTML } from 'linkedom';
@@ -33,7 +34,13 @@ for (const path of files.filter(p => extname(p) === '.html')) {
   if (!document.querySelector('main#main') || !document.title) errors.push(`${name}: missing landmarks/title`);
   const ids = [...document.querySelectorAll('[id]')].map(e => e.id);
   if (new Set(ids).size !== ids.length) errors.push(`${name}: duplicate element ids`);
-  const inlineScripts = [...document.querySelectorAll('script')].filter(node => !node.getAttribute('src'));
+  const dataScripts = [...document.querySelectorAll('script[type="application/ld+json"]')];
+  for (const script of dataScripts) {
+    try { const data = JSON.parse(script.textContent); if (data['@context'] !== 'https://schema.org' || !Array.isArray(data['@graph'])) throw new Error('Invalid graph'); } catch { errors.push(name + ': invalid JSON-LD'); }
+    const hash = 'sha256-' + createHash('sha256').update(script.textContent).digest('base64');
+    if (!document.querySelector('meta[http-equiv="Content-Security-Policy"]')?.getAttribute('content').includes(hash)) errors.push(name + ': JSON-LD hash missing');
+  }
+  const inlineScripts = [...document.querySelectorAll('script')].filter(node => !node.getAttribute('src') && node.getAttribute('type') !== 'application/ld+json');
   if (inlineScripts.length !== 1 || inlineScripts[0].textContent !== themeInit) errors.push(`${name}: unexpected or missing theme bootstrap`);
   // Prefetch is limited to same-origin HTML pages, never large downloads or external links.
   for (const link of document.querySelectorAll('a[data-astro-prefetch]')) {
@@ -44,9 +51,10 @@ for (const path of files.filter(p => extname(p) === '.html')) {
   }
   for (const img of document.querySelectorAll('img')) {
     if (!img.hasAttribute('alt')) errors.push(`${name}: missing image alt`);
-    if (img.hasAttribute('srcset')) {
-      if (!img.hasAttribute('sizes') || !img.hasAttribute('width') || !img.hasAttribute('height')) errors.push(`${name}: responsive image missing dimensions/sizes`);
-      for (const candidate of img.getAttribute('srcset').split(',')) {
+    const responsive = img.parentElement?.tagName === 'PICTURE' ? img.parentElement.querySelector('source') : img;
+    if (responsive?.hasAttribute('srcset')) {
+      if (!responsive.hasAttribute('sizes') || !img.hasAttribute('width') || !img.hasAttribute('height')) errors.push(`${name}: responsive image missing dimensions/sizes`);
+      for (const candidate of responsive.getAttribute('srcset').split(',')) {
         const [url, descriptor] = candidate.trim().split(/\s+/);
         const local = url.slice(prefix.length);
         if (!url.startsWith(`${prefix}/_astro/`) || !/^\d+w$/.test(descriptor || '') || !await stat(resolve(root, `.${local}`)).then(s => s.isFile()).catch(() => false)) errors.push(`${name}: invalid responsive image ${candidate}`);
@@ -88,7 +96,9 @@ for (const [path, doc] of documents) {
   if (doc.querySelector('meta[http-equiv="refresh"]')) continue;
   const csp = doc.querySelector('meta[http-equiv="Content-Security-Policy"]')?.getAttribute('content') || '';
   const directives = csp.split(';').map(value => value.trim());
-  if (!["default-src 'self'", `script-src 'self' '${themeHash}'`, "script-src-attr 'none'", "worker-src 'none'", "object-src 'none'", "base-uri 'none'"].every(value => directives.includes(value)) || /'unsafe-eval'/.test(csp)) errors.push(`${relative(root,path)}: CSP missing or weakened`);
+  const hashes = [themeHash, ...[...doc.querySelectorAll('script[type="application/ld+json"]')].map(node => 'sha256-' + createHash('sha256').update(node.textContent).digest('base64'))];
+  const expectedScripts = "script-src 'self' " + hashes.map(hash => "'" + hash + "'").join(' ');
+  if (!["default-src 'self'", "script-src-attr 'none'", "worker-src 'none'", "object-src 'none'", "base-uri 'none'"].every(value => directives.includes(value)) || !directives.includes(expectedScripts) || /'unsafe-eval'|'unsafe-inline'/.test(directives.find(value => value.startsWith('script-src ')) || '')) errors.push(`${relative(root,path)}: CSP missing or weakened`);
 }
 if (!files.some(p => relative(root,p) === '404.html')) errors.push('GitHub Pages needs a top-level 404.html');
 if (errors.length) throw new Error(`Build verification failed:\n${errors.join('\n')}`);

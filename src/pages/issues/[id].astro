@@ -13,7 +13,7 @@ const tocHeading = issue.data.kind === 'regular' ? 'در این شماره' : '�
 //const showEyebrow = issue.data.kind === 'regular' || (Boolean(issue.data.dateLabel) && !/ویژه[\u200c\s]*نامه/.test(issue.data.title));
 const showEyebrow = true;
 ---
-<Base title={`${issueLabel(issue)}؛ ${issue.data.title}`} description={issue.data.description} image={issue.data.cover}>
+<Base title={`${issueLabel(issue)}؛ ${issue.data.title}`} description={issue.data.description} image={issue.data.cover} imageAlt={issue.data.coverAlt} entity={{ '@type': 'PublicationIssue', name: issue.data.title, description: issue.data.description, ...(issue.data.number ? { issueNumber: issue.data.number } : {}), isPartOf: { '@type': 'Periodical', name: 'نشریه رایانش' }, inLanguage: 'fa-IR' }}>
   <div class="shell page">
     <Breadcrumb items={[{ href: '/issues/', label: 'گنجه' }, { label: issue.data.title }]} />
     <div class="issue-detail">

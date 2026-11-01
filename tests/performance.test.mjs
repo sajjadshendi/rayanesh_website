@@ -26,7 +26,7 @@ test('production images preserve originals, CSP and base paths, share variants, 
   await writeFile(join(root, 'second.html'), html);
   const report = await optimizeImages(root, { base: '/mag/' });
   assert.equal(report.pages, 2);
-  assert.equal(report.variants, 5);
+  assert.equal(report.variants, 7);
   const output = await readFile(join(root, 'index.html'), 'utf8');
   const { document } = parseHTML(output);
   assert.equal(document.querySelector('script').textContent, themeInit);
@@ -37,9 +37,11 @@ test('production images preserve originals, CSP and base paths, share variants, 
   assert.equal(image.getAttribute('height'), '1200');
   assert.equal(image.getAttribute('loading'), 'eager');
   assert.equal(avatar.getAttribute('loading'), 'lazy');
-  assert.equal(avatar.getAttribute('sizes'), '72px');
+  assert.equal(avatar.previousElementSibling.getAttribute('sizes'), '72px');
+  assert.equal(image.getAttribute('src'), '/mag/images/room.jpg');
+  assert.equal(image.previousElementSibling.getAttribute('type'), 'image/webp');
   for (const img of [image, avatar]) {
-    for (const entry of img.getAttribute('srcset').split(',')) {
+    for (const entry of img.previousElementSibling.getAttribute('srcset').split(',')) {
       const [url, descriptor] = entry.trim().split(/\s+/);
       assert.ok(url.startsWith('/mag/_astro/'));
       const metadata = await sharp(await readFile(join(root, url.slice('/mag/'.length)))).metadata();
@@ -49,12 +51,12 @@ test('production images preserve originals, CSP and base paths, share variants, 
   }
   assert.equal(await readFile(join(root, 'second.html'), 'utf8'), output);
   assert.equal((await optimizeImages(root, { base: '/mag/' })).variants, 0);
-  const oldSrc = image.getAttribute('src');
+  const oldSrc = image.previousElementSibling.getAttribute('srcset');
   await writeFile(join(root, 'images', 'room.jpg'), await sharp({ create: { width: 900, height: 1200, channels: 3, background: '#ffffff' } }).jpeg().toBuffer());
   await writeFile(join(root, 'index.html'), html);
   await optimizeImages(root, { base: '/mag/' });
   const updated = parseHTML(await readFile(join(root, 'index.html'), 'utf8')).document;
-  assert.notEqual(updated.querySelector('img').getAttribute('src'), oldSrc);
+  assert.notEqual(updated.querySelector('source').getAttribute('srcset'), oldSrc);
 });
 
 test('math styles are requested only for rendered math, including inline formulas', async () => {
@@ -63,4 +65,26 @@ test('math styles are requested only for rendered math, including inline formula
     const result = await processor.render(text);
     assert.equal(result.metadata.frontmatter.hasMath, expected);
   }
+});
+
+
+test('WebP originals include a decodable fallback and preserve transparency', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'rayanesh-fallback-'));
+  t.after(async () => { await rm(root, { recursive: true, force: true }); });
+  await mkdir(join(root, 'images'));
+  await writeFile(join(root, 'images', 'cover.webp'), await sharp({ create: { width: 100, height: 150, channels: 4, background: { r: 40, g: 75, b: 59, alpha: 0.5 } } }).webp().toBuffer());
+  await writeFile(join(root, 'index.html'), '<html><body><img src="/mag/images/cover.webp" alt="cover"></body></html>');
+  await optimizeImages(root, { base: '/mag/' });
+  const { document } = parseHTML(await readFile(join(root, 'index.html'), 'utf8'));
+  const img = document.querySelector('picture img');
+  assert.ok(img);
+  const fallback = img.getAttribute('src');
+  assert.match(fallback, /^\/mag\/_astro\/.+\.png$/);
+  const metadata = await sharp(join(root, fallback.slice('/mag/'.length))).metadata();
+  assert.equal(metadata.format, 'png');
+  assert.equal(metadata.width, 100);
+  assert.equal(metadata.height, 150);
+  assert.equal(metadata.hasAlpha, true);
+  assert.equal(document.querySelector('source').getAttribute('type'), 'image/webp');
+  assert.equal((await optimizeImages(root, { base: '/mag/' })).variants, 0);
 });

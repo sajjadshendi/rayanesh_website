@@ -20,6 +20,7 @@ function profile(img) {
     const size = img.classList.contains('avatar-lg') ? 72 : Number(img.getAttribute('width')) || 48;
     return { widths: [size, size * 2], fallback: size * 2, sizes: `${size}px` };
   }
+  if (img.closest('.about-page')) return { widths: [320, 480, 525, 800, 1050], fallback: 525, sizes: '(max-width: 380px) calc(100vw - 24px), (max-width: 561px) calc(100vw - 36px), 525px' };
   if (img.closest('.opening-cover')) return { widths: [200, 330, 400, 660, 750], fallback: 400, sizes: '(max-width: 760px) 190px, 330px' };
   if (img.closest('.cover-frame')) return { widths: [160, 240, 360, 480, 750], fallback: 360, sizes: '(max-width: 760px) calc((100vw - 52px) / 2), 300px' };
   if (img.closest('.card-media')) return { widths: [320, 480, 750], fallback: 480, sizes: '(max-width: 760px) calc(100vw - 36px), (max-width: 980px) 65vw, 480px' };
@@ -41,6 +42,8 @@ export async function optimizeImages(directory, { base = '/' } = {}) {
     const { document } = parseHTML(await readFile(path, 'utf8'));
     let changed = false;
     for (const img of document.querySelectorAll('img')) {
+      // Leave authored or already optimized picture elements intact.
+      if (img.closest('picture')) continue;
       const src = img.getAttribute('src') || '';
       if (!src.startsWith(`${prefix}/`)) continue;
       const local = src.slice(prefix.length);
@@ -74,9 +77,27 @@ export async function optimizeImages(directory, { base = '/' } = {}) {
         choices.push(variant);
       }
       const fallback = choices.find(choice => choice.width >= Math.min(settings.fallback, source.width)) || choices.at(-1);
-      img.setAttribute('src', fallback.url);
-      img.setAttribute('srcset', choices.map(choice => `${choice.url} ${choice.width}w`).join(', '));
-      img.setAttribute('sizes', settings.sizes);
+      // Every image has a format fallback, including original WebP magazine covers.
+      if (!/\.(?:png|jpe?g)$/i.test(local)) {
+        const key = sourcePath + ':' + fallback.width + ':png';
+        let compatible = variants.get(key);
+        if (!compatible) {
+          const buffer = await sharp(source.buffer).rotate().resize({ width: fallback.width, withoutEnlargement: true }).png().toBuffer();
+          const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 20);
+          const name = 'image-' + hash + '-' + fallback.width + '.png';
+          await writeFile(resolve(assets, name), buffer);
+          compatible = { url: prefix + '/_astro/' + name, width: fallback.width };
+          variants.set(key, compatible);
+        }
+        img.setAttribute('src', compatible.url);
+      }
+      const responsive = document.createElement('source');
+      const picture = document.createElement('picture');
+      responsive.setAttribute('type', 'image/webp');
+      img.replaceWith(picture);
+      picture.append(responsive, img);
+      responsive.setAttribute('srcset', choices.map(choice => `${choice.url} ${choice.width}w`).join(', '));
+      responsive.setAttribute('sizes', settings.sizes);
       if (!img.hasAttribute('width')) img.setAttribute('width', String(source.width));
       if (!img.hasAttribute('height')) img.setAttribute('height', String(source.height));
       img.setAttribute('decoding', 'async');

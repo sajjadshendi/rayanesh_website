@@ -1,4 +1,5 @@
 ---
+import { structuredData } from '../lib/seo.mjs';
 import { themeInit, themeHash } from '../lib/theme.mjs';
 import vazirmatnArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url';
 import naskhArabic from '@fontsource-variable/noto-naskh-arabic/files/noto-naskh-arabic-arabic-wght-normal.woff2?url';
@@ -6,16 +7,25 @@ import { withBase, withoutBase } from '../lib/paths';
 import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/noto-naskh-arabic';
 import '../styles/global.css';
-import { site, getCatalog } from '../lib/catalog';
-interface Props { title?: string; description?: string; image?: string; article?: boolean; noindex?: boolean; mathStyles?: string }
-const { title, description = site.description, image, article = false, noindex = false, mathStyles } = Astro.props;
-const pageTitle = title ? `${title} | ${site.name}` : `${site.name} — نشریه علمی و فرهنگی`;
+import { site } from '../lib/catalog';
+interface Props { title?: string; description?: string; image?: string; article?: boolean; noindex?: boolean; mathStyles?: string; entity?: Record<string, unknown>; imageAlt?: string }
+const { title, description = site.description, image, article = false, noindex = false, mathStyles, entity, imageAlt = site.name } = Astro.props;
+const pageTitle = title ? `${title} | ${site.name}` : site.name;
 const path = withoutBase(Astro.url.pathname);
 const blocked = noindex || !Astro.site;
-const canonical = Astro.site ? new URL(withBase(path), Astro.site).href : undefined;
-const { issueMap } = await getCatalog();
-const currentIssue = issueMap.get(site.featuredIssue)!;
-const socialImage = image || currentIssue.data.cover;
+const canonical = Astro.site && !['/404/', '/404.html'].includes(path) ? new URL(withBase(path), Astro.site).href : undefined;
+
+const socialImage = image || '/images/social-card.png';
+const absolute = (value: string) => Astro.site ? new URL(withBase(value), Astro.site).href : undefined;
+const home = absolute('/')!;
+const publisher = { '@type': 'Organization', '@id': home + '#organization', name: site.name, url: home, logo: { '@type': 'ImageObject', url: absolute('/images/site-logo.png'), width: 512, height: 512 } };
+const entityId = canonical + '#entity';
+const seo = !blocked && canonical ? structuredData([
+  publisher,
+  { '@type': 'WebSite', '@id': home + '#website', name: site.name, alternateName: 'رایانش', url: home, inLanguage: 'fa-IR', publisher: { '@id': publisher['@id'] } },
+  { '@type': entity?.['@type'] === 'Person' ? 'ProfilePage' : 'WebPage', '@id': canonical + '#webpage', url: canonical, name: pageTitle, description, inLanguage: 'fa-IR', isPartOf: { '@id': home + '#website' }, ...(entity ? { mainEntity: { '@id': entityId } } : {}) },
+  ...(entity ? [{ ...entity, '@id': entityId, mainEntityOfPage: { '@id': canonical + '#webpage' } }] : []),
+]) : undefined;
 const nav = [{ href: '/articles/', label: 'نوشته‌ها' }, { href: '/issues/', label: 'گنجه' }, { href: '/authors/', label: 'نویسندگان' }, { href: '/about/', label: 'درباره رایانش' }];
 const isCurrent = (item: { href: string; also?: string[] }) => [item.href, ...(item.also ?? [])].some(prefix => path.startsWith(prefix));
 const primaryNav = [{ href: '/', label: 'خانه رایانش' }, ...nav];
@@ -25,14 +35,14 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
 <html lang="fa" dir="rtl" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Content-Security-Policy" content={`default-src 'self'; script-src 'self' '${themeHash}'; script-src-attr 'none'; worker-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests`} />
+    <meta http-equiv="Content-Security-Policy" content={`default-src 'self'; script-src 'self' '${themeHash}'${seo ? ` '${seo.hash}'` : ''}; script-src-attr 'none'; worker-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests`} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#f4f0e7" />
-    {blocked && <meta name="robots" content="noindex, nofollow" />}
-    {canonical && <link rel="canonical" href={withBase(canonical)} />}
+    {blocked && <meta name="robots" content={Astro.site ? "noindex, follow" : "noindex, nofollow"} />}
+    {canonical && <link rel="canonical" href={canonical} />}
     <meta property="og:locale" content="fa_IR" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={pageTitle} />
@@ -40,8 +50,20 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
     <meta property="og:type" content={article ? 'article' : 'website'} />
     {canonical && <meta property="og:url" content={canonical} />}
     {Astro.site && <meta property="og:image" content={new URL(withBase(socialImage), Astro.site).href} />}
+    <meta property="og:image:alt" content={imageAlt} />
+    {!image && <><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /></>}
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {Astro.site && <meta name="twitter:image" content={absolute(socialImage)} />}
+    <meta name="twitter:image:alt" content={imageAlt} />
+    {!blocked && <meta name="robots" content="index, follow, max-image-preview:large" />}
+    {article && typeof entity?.datePublished === 'string' && <meta property="article:published_time" content={entity.datePublished} />}
+    {seo && <script is:inline type="application/ld+json" set:html={seo.json}></script>}
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/png" href={withBase('/images/rayanesh-logo.png')} />
+    <link rel="icon" type="image/x-icon" sizes="32x32 48x48" href={withBase('/favicon.ico')} />
+    <link rel="icon" type="image/png" sizes="96x96" href={withBase('/favicon-96.png')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')} />
+    <meta name="apple-mobile-web-app-title" content={site.name} />
     {Astro.site && <link rel="alternate" type="application/rss+xml" title="تازه‌های رایانش" href={withBase('/rss.xml')} />}
     <link rel="preload" href={withBase(vazirmatnArabic)} as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="preload" href={withBase(naskhArabic)} as="font" type="font/woff2" crossorigin="anonymous" />
@@ -52,7 +74,7 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
     <a class="skip-link" href="#main">رفتن به محتوای صفحه</a>
     <header class="masthead" id="masthead">
       <div class="nav-row shell">
-        <a data-astro-prefetch class="brand" href={withBase('/')} aria-label="رایانش، صفحه نخست">
+        <a data-astro-prefetch class="brand" href={withBase('/')} aria-label={`${site.name}، صفحه نخست`}>
           <span class="brand-mark" aria-hidden="true"></span>
           <span class="brand-line" aria-hidden="true">نشریه علمی و فرهنگی دانشکده مهندسی کامپیوتر شریف</span>
         </a>
@@ -70,7 +92,7 @@ const isPrimaryCurrent = (item: { href: string; also?: string[] }) => item.href 
     <footer class="site-footer">
       <div class="footer-grid shell">
         <div class="footer-about">
-          <a data-astro-prefetch class="footer-title" href={withBase('/')}>رایانش</a>
+          <a data-astro-prefetch class="footer-title" href={withBase('/')}>{site.name}</a>
           <p class="muted">نشریه انجمن علمی دانشکده مهندسی کامپیوتر دانشگاه صنعتی شریف.</p>
         </div>
         <nav class="footer-col" aria-labelledby="footer-quick">

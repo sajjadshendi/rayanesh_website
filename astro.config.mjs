@@ -36,5 +36,6 @@ export default defineConfig({
     }),
     shikiConfig: { theme: 'github-light', wrap: false },
   },
-  vite: { build: { assetsInlineLimit: 0, sourcemap: false } },
+  // Keep client syntax and emitted CSS usable on older mobile browsers.
+  vite: { build: { target: ['chrome80', 'safari13'], cssTarget: ['chrome80', 'safari13'], assetsInlineLimit: 0, sourcemap: false } },
 });

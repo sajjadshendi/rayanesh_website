@@ -9,11 +9,12 @@
   "scripts": {
     "dev": "astro dev",
     "check": "node scripts/validate-content.mjs && astro check",
-    "build": "npm run check && astro build && node scripts/optimize-images.mjs && node scripts/verify-build.mjs",
+    "build": "npm run check && astro build && node scripts/optimize-images.mjs && node scripts/verify-build.mjs && node scripts/verify-seo.mjs",
     "preview": "astro preview",
     "test": "node --test tests/*.test.mjs",
     "validate": "npm test && npm run build",
-    "new": "node scripts/new-content.mjs"
+    "new": "node scripts/new-content.mjs",
+    "assets:brand": "node scripts/generate-brand-assets.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.1",

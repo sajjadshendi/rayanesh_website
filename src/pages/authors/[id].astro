@@ -11,7 +11,7 @@ const { articles, authorMap, issueMap, issues } = await getCatalog();
 const selected = articles.filter(a => a.data.authors.includes(author.id));
 const roles = [...new Set(issues.flatMap(issue => issue.data.credits.filter(credit => credit.names.includes(author.data.name)).map(credit => credit.role)))].filter(role => /سردبیر/.test(role));
 ---
-<Base title={author.data.name} description={author.data.bio}>
+<Base title={author.data.name} description={`معرفی ${author.data.name} و نوشته‌های او در نشریه رایانش. ${author.data.bio || ""}`} entity={{ "@type": author.id === "rayanesh-editorial-team" ? "Organization" : "Person", name: author.data.name, description: author.data.bio, url: Astro.site ? new URL(withBase(`/authors/${author.id}/`), Astro.site).href : undefined, ...(author.data.avatar && Astro.site ? { image: new URL(withBase(author.data.avatar), Astro.site).href } : {}) }}>
   <div class="shell page">
     <Breadcrumb items={[{ href: '/authors/', label: 'نویسندگان' }, { label: author.data.name }]} />
     <header class="page-heading author-heading">
