@@ -92,3 +92,32 @@ test('WebP originals include a decodable fallback and preserve transparency', as
   assert.equal(document.querySelector('source').getAttribute('type'), 'image/avif');
   assert.equal((await optimizeImages(root, { base: '/mag/' })).variants, 0);
 });
+
+
+test('all real covers stay under 60 KB; recent images use a landscape crop and small full cover', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'rayanesh-cover-budget-'));
+  t.after(async () => { await rm(root, { recursive: true, force: true }); });
+  await mkdir(join(root, 'covers'));
+  const names = ['15', '16', '17', '18', '19', '20', 'freshers-1403', 'freshers-1404', 'ganjeh', 'nowruz'];
+  for (const name of names) await writeFile(join(root, 'covers', name + '.webp'), await readFile(new URL('../public/covers/' + name + '.webp', import.meta.url)));
+  const covers = names.map(name => '<div class="issue-cover"><img src="/covers/' + name + '.webp"></div>').join('');
+  const recent = ['20', 'freshers-1404'].map(name => '<a class="recent-cover"><img class="recent-cover-crop" src="/covers/' + name + '.webp"><img class="recent-cover-full" src="/covers/' + name + '.webp"></a>').join('');
+  await writeFile(join(root, 'index.html'), '<html><body>' + covers + recent + '</body></html>');
+  await optimizeImages(root);
+  const { document } = parseHTML(await readFile(join(root, 'index.html'), 'utf8'));
+  for (const img of document.querySelectorAll('img')) {
+    const urls = [img.getAttribute('src'), ...[...img.parentElement.querySelectorAll('source')].flatMap(source => source.getAttribute('srcset').split(',').map(entry => entry.trim().split(' ')[0]))];
+    for (const url of urls) {
+      const bytes = await readFile(join(root, url.slice(1)));
+      assert.ok(bytes.length < 60000, url + ' exceeds cover transfer budget');
+      const metadata = await sharp(bytes).metadata();
+      if (img.classList.contains('recent-cover-crop')) {
+        assert.ok(Math.abs(metadata.height - metadata.width * 9 / 16) <= 1);
+        assert.ok(bytes.length < 30000, 'recent crop exceeds 30 KB');
+      } else if (img.classList.contains('recent-cover-full')) {
+        assert.ok(metadata.width <= 240);
+        assert.ok(bytes.length < 20000, 'recent full cover exceeds 20 KB');
+      } else assert.ok(metadata.width <= 480);
+    }
+  }
+});

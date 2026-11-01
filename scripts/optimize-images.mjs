@@ -16,6 +16,11 @@ async function htmlFiles(directory) {
 }
 
 function profile(img) {
+  // Encode only the visible 16:9 area, not an entire tall magazine cover.
+  if (img.classList.contains('recent-cover-crop')) return { widths: [280, 420, 560], fallback: 280, crop: true, sizes: '(max-width: 760px) 90vw, 560px' };
+  // The full cover is contained inside a short landscape frame, so 240px
+  // already covers its actual displayed width without a large download.
+  if (img.classList.contains('recent-cover-full')) return { widths: [160, 240], fallback: 240, sizes: '240px' };
   if (img.classList.contains('avatar')) {
     const size = img.classList.contains('avatar-lg') ? 72 : Number(img.getAttribute('width')) || 48;
     return { widths: [size, size * 2], fallback: size * 2, sizes: `${size}px` };
@@ -63,21 +68,29 @@ export async function optimizeImages(directory, { base = '/' } = {}) {
       // Keep the original intact and retain its provenance.
       img.setAttribute('data-image-original', src);
       const settings = profile(img);
+      const cover = local.startsWith('/covers/');
+      if (cover && !settings.crop) {
+        settings.widths = [...new Set(settings.widths.map(width => Math.min(width, 480)))];
+        settings.fallback = Math.min(settings.fallback, 320);
+      }
+      const transform = settings.crop ? 'crop-top' : 'full';
+      const resize = width => ({ width, withoutEnlargement: true,
+        ...(settings.crop ? { height: Math.round(width * 9 / 16), fit: 'cover', position: 'top' } : {}) });
       const widths = [...new Set(settings.widths.map(width => Math.min(width, source.width)))].sort((a, b) => a - b);
       const picture = document.createElement('picture');
       img.replaceWith(picture);
-      // AVIF keeps full-resolution detail at a smaller transfer size. WebP
+      // AVIF reduces transfer size; cover dimensions match their display. WebP
       // remains available for browsers without AVIF support.
       for (const format of ['avif', 'webp']) {
         const choices = [];
         for (const width of widths) {
-          const key = sourcePath + ':' + width + ':' + format;
+          const key = sourcePath + ':' + transform + ':' + width + ':' + format;
           let variant = variants.get(key);
           if (!variant) {
-            const pipeline = sharp(source.buffer).rotate().resize({ width, withoutEnlargement: true });
+            const pipeline = sharp(source.buffer).rotate().resize(resize(width));
             const buffer = await (format === 'avif'
-              ? pipeline.avif({ quality: 65, effort: 5, chromaSubsampling: '4:4:4' })
-              : pipeline.webp({ quality: 82, effort: 5 })).toBuffer();
+              ? pipeline.avif({ quality: cover ? 50 : 65, effort: 5, chromaSubsampling: '4:4:4' })
+              : pipeline.webp({ quality: cover ? 72 : 82, effort: 6 })).toBuffer();
             const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 20);
             const name = 'image-' + hash + '-' + width + '.' + format;
             await writeFile(resolve(assets, name), buffer);
@@ -96,11 +109,11 @@ export async function optimizeImages(directory, { base = '/' } = {}) {
       // requests stall. Never download the large original as the first retry.
       const width = Math.min(settings.fallback, source.width, 480);
       const format = source.alpha ? 'png' : 'jpeg';
-      const key = sourcePath + ':' + width + ':' + format;
+      const key = sourcePath + ':' + transform + ':' + width + ':' + format;
       let compatible = variants.get(key);
       if (!compatible) {
-        const pipeline = sharp(source.buffer).rotate().resize({ width, withoutEnlargement: true });
-        const buffer = await (source.alpha ? pipeline.png() : pipeline.jpeg({ quality: 82, mozjpeg: true })).toBuffer();
+        const pipeline = sharp(source.buffer).rotate().resize(resize(width));
+        const buffer = await (source.alpha ? pipeline.png() : pipeline.jpeg({ quality: cover ? 72 : 82, mozjpeg: true })).toBuffer();
         const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 20);
         const name = 'image-' + hash + '-' + width + '.' + format;
         await writeFile(resolve(assets, name), buffer);
@@ -110,6 +123,10 @@ export async function optimizeImages(directory, { base = '/' } = {}) {
       img.setAttribute('src', compatible.url);
       img.setAttribute('data-image-recovery', compatible.url);
       picture.append(img);
+      if (settings.crop) {
+        img.setAttribute('width', '560');
+        img.setAttribute('height', '315');
+      }
       if (!img.hasAttribute('width')) img.setAttribute('width', String(source.width));
       if (!img.hasAttribute('height')) img.setAttribute('height', String(source.height));
       img.setAttribute('decoding', 'async');
