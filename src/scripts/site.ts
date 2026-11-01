@@ -75,3 +75,69 @@ if (archive) {
   tabs.forEach(tab => tab.addEventListener('click', () => show(tab.dataset.archiveTab ?? 'regular')));
   addEventListener('hashchange', () => show(fromHash()));
 }
+
+// A picture's format fallback does not handle network errors automatically.
+// Probe the untouched original without cancelling a potentially slow download.
+// Only visible images get a timeout, and each image gets at most one probe.
+for (const img of document.querySelectorAll<HTMLImageElement>('img[data-image-original]')) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let probe: HTMLImageElement | undefined;
+  let observer: IntersectionObserver | undefined;
+  let started = false;
+  let attempted = false;
+  let finished = false;
+  const loaded = () => img.complete && img.naturalWidth > 0;
+  const cleanup = () => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = undefined;
+    observer?.disconnect();
+    if (probe) { probe.onload = null; probe.onerror = null; }
+    img.removeEventListener('error', recover);
+    img.removeEventListener('load', finish);
+  };
+  const finish = () => {
+    finished = true;
+    cleanup();
+  };
+  const recover = () => {
+    if (attempted || finished || loaded()) return;
+    attempted = true;
+    if (timer !== undefined) clearTimeout(timer);
+    timer = undefined;
+    const original = img.dataset.imageOriginal;
+    if (!original) return;
+    const url = new URL(original, document.baseURI);
+    // Do not retry the same URL or send image requests to other hosts.
+    if (url.origin !== location.origin || url.href === (img.currentSrc || img.src)) return;
+    probe = new Image();
+    probe.onload = () => {
+      if (finished || loaded() || !probe?.naturalWidth) { finish(); return; }
+      finish();
+      // Remove sources only after a complete replacement has arrived.
+      img.closest('picture')?.querySelectorAll('source').forEach(source => source.remove());
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      img.src = url.href;
+    };
+    probe.onerror = finish;
+    probe.src = url.href;
+  };
+  const start = () => {
+    if (started || finished) return;
+    started = true;
+    observer?.disconnect();
+    if (loaded()) { finish(); return; }
+    if (img.complete) recover();
+    else timer = setTimeout(recover, 20000);
+  };
+  img.addEventListener('load', finish);
+  img.addEventListener('error', recover);
+  if (loaded()) finish();
+  else if (img.loading !== 'lazy' || typeof IntersectionObserver === 'undefined') start();
+  else {
+    observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) start();
+    });
+    observer.observe(img);
+  }
+}

@@ -60,6 +60,8 @@ export async function optimizeImages(directory, { base = '/' } = {}) {
         if (!source.width || !source.height) throw new Error(`Missing image dimensions: ${src}`);
         sources.set(sourcePath, source);
       }
+      // Preserve the untouched original as a network recovery candidate.
+      img.setAttribute('data-image-original', src);
       const settings = profile(img);
       const widths = [...new Set(settings.widths.map(width => Math.min(width, source.width)))].sort((a, b) => a - b);
       const choices = [];

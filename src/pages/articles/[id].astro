@@ -1,4 +1,5 @@
 ---
+import { pdfDownloadUrl } from '../../lib/pdf.mjs';
 import { withBase } from '../../lib/paths';
 import { render } from 'astro:content';
 import mathStyles from 'katex/dist/katex.min.css?url';
@@ -55,12 +56,12 @@ const next = index >= 0 ? siblings[index + 1] : undefined;
               </nav>
             </details>
           )}
-          <a class="source-link" href={withBase(`${issue.data.pdf}#page=${article.data.pdfPage}`)}>این نوشته در نسخه PDF ↗</a>
+          <a class="source-link" href={withBase(pdfDownloadUrl(`${issue.data.pdf}#page=${article.data.pdfPage}`))}>این نوشته در نسخه PDF ↗</a>
           <button type="button" id="share-article" class="button button-ghost share-article" hidden>هم‌رسانی نوشته</button>
           <span id="share-status" role="status" class="small"></span>
         </aside>
         <div class="reading-body">
-          {article.data.edition === 'excerpt' && <p class="editorial-note">این صفحه گزیده‌ای از مطلب است. <a href={withBase(`${issue.data.pdf}#page=${article.data.pdfPage}`)}>متن کامل را در PDF شماره بخوانید.</a></p>}
+          {article.data.edition === 'excerpt' && <p class="editorial-note">این صفحه گزیده‌ای از مطلب است. <a href={withBase(pdfDownloadUrl(`${issue.data.pdf}#page=${article.data.pdfPage}`))}>متن کامل را در PDF شماره بخوانید.</a></p>}
           {article.data.audio && (
             <figure class="audio-reading">
               <figcaption>خوانش: {article.data.audio.reader}</figcaption>

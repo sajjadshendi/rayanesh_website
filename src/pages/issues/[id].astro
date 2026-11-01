@@ -1,4 +1,5 @@
 ---
+import { pdfDownloadUrl } from '../../lib/pdf.mjs';
 import { withBase } from '../../lib/paths';
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
@@ -22,7 +23,7 @@ const showEyebrow = true;
         {showEyebrow && <p class="eyebrow">{issueByline(issue, ' · ')}</p>}
         <h1>{issue.data.title}</h1>
         <p class="deck">{issue.data.description}</p>
-        <a class="button" href={withBase(issue.data.pdf)}>خواندن نسخه PDF <span aria-hidden="true">↗</span></a>
+        <a class="button" href={withBase(pdfDownloadUrl(issue.data.pdf))}>خواندن نسخه PDF <span aria-hidden="true">↗</span></a>
         {issue.data.credits.length > 0 && (
           <details class="credits">
             <summary>

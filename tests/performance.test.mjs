@@ -39,6 +39,7 @@ test('production images preserve originals, CSP and base paths, share variants, 
   assert.equal(avatar.getAttribute('loading'), 'lazy');
   assert.equal(avatar.previousElementSibling.getAttribute('sizes'), '72px');
   assert.equal(image.getAttribute('src'), '/mag/images/room.jpg');
+  assert.equal(image.getAttribute('data-image-original'), '/mag/images/room.jpg');
   assert.equal(image.previousElementSibling.getAttribute('type'), 'image/webp');
   for (const img of [image, avatar]) {
     for (const entry of img.previousElementSibling.getAttribute('srcset').split(',')) {
@@ -78,6 +79,7 @@ test('WebP originals include a decodable fallback and preserve transparency', as
   const { document } = parseHTML(await readFile(join(root, 'index.html'), 'utf8'));
   const img = document.querySelector('picture img');
   assert.ok(img);
+  assert.equal(img.getAttribute('data-image-original'), '/mag/images/cover.webp');
   const fallback = img.getAttribute('src');
   assert.match(fallback, /^\/mag\/_astro\/.+\.png$/);
   const metadata = await sharp(join(root, fallback.slice('/mag/'.length))).metadata();

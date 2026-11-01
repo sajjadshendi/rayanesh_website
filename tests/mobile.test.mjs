@@ -32,3 +32,61 @@ test('mobile menu and theme initialize with modern and legacy media listeners', 
     assert.equal(button.getAttribute('aria-expanded'), 'false');
   }
 });
+
+
+test('image recovery keeps the current download until the original loads and never loops', async () => {
+  const source = ts.transpile(await readFile(new URL('../src/scripts/site.ts', import.meta.url), 'utf8'), { target: ts.ScriptTarget.ES2018 });
+  for (const scenario of ['error', 'timeout', 'primary-wins', 'fallback-fails', 'lazy']) {
+    const { document, window } = parseHTML('<html><body><picture><source srcset="/optimized.webp 750w"><img src="/fallback.png" data-image-original="/covers/20.webp"></picture></body></html>');
+    Object.defineProperty(document, 'baseURI', { value: 'https://example.com/' });
+    const img = document.querySelector('img');
+    Object.defineProperties(img, {
+      complete: { value: false, writable: true },
+      naturalWidth: { value: 0, writable: true },
+      currentSrc: { value: 'https://example.com/optimized.webp' },
+      loading: { value: scenario === 'lazy' ? 'lazy' : 'eager' },
+    });
+    const probes = [];
+    const timers = new Map();
+    let nextTimer = 0;
+    let visible;
+    class Probe { constructor() { this.naturalWidth = 750; probes.push(this); } }
+    class Observer { constructor(callback) { visible = callback; } observe() {} disconnect() {} }
+    vm.runInNewContext(source, {
+      document, URL, location: { origin: 'https://example.com' }, Image: Probe,
+      IntersectionObserver: Observer,
+      matchMedia: () => ({ matches: false, addEventListener() {} }),
+      setTimeout: callback => { timers.set(++nextTimer, callback); return nextTimer; },
+      clearTimeout: id => timers.delete(id),
+    });
+    if (scenario === 'lazy') {
+      assert.equal(timers.size, 0, 'offscreen images do not start fallback downloads');
+      assert.equal(probes.length, 0);
+      visible([{ isIntersecting: true }]);
+    }
+    if (scenario === 'error' || scenario === 'fallback-fails') img.dispatchEvent(new window.Event('error'));
+    else [...timers.values()][0]();
+    assert.equal(probes.length, 1);
+    assert.equal(probes[0].src, 'https://example.com/covers/20.webp');
+    assert.ok(document.querySelector('source'), 'keep the primary request while probing');
+    const callback = probes[0].onload;
+    if (scenario === 'primary-wins') {
+      img.complete = true;
+      img.naturalWidth = 750;
+      img.dispatchEvent(new window.Event('load'));
+      callback();
+      assert.ok(document.querySelector('source'));
+      assert.equal(img.getAttribute('src'), '/fallback.png');
+    } else if (scenario === 'fallback-fails') {
+      probes[0].onerror();
+      assert.ok(document.querySelector('source'));
+    } else {
+      callback();
+      assert.equal(document.querySelector('source'), null);
+      assert.equal(img.getAttribute('src'), 'https://example.com/covers/20.webp');
+    }
+    img.dispatchEvent(new window.Event('error'));
+    assert.equal(probes.length, 1, 'no retry loops');
+    assert.equal(timers.size, 0);
+  }
+});

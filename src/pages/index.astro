@@ -1,4 +1,5 @@
 ---
+import { pdfDownloadUrl } from '../lib/pdf.mjs';
 import { withBase } from '../lib/paths';
 import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/ArticleCard.astro';
@@ -26,7 +27,7 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 8);
     <p class="lead">{site.heroDescription}</p>
     <div class="button-row opening-actions">
       <a data-astro-prefetch class="button" href={withBase(`/issues/${issue.id}/`)}>ورق زدن این شماره <Arrow /></a>
-      <a class="button button-ghost" href={withBase(issue.data.pdf)}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
+      <a class="button button-ghost" href={withBase(pdfDownloadUrl(issue.data.pdf))}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
     </div>
     <div class="opening-cover">
       <a data-astro-prefetch class="book" href={withBase(`/issues/${issue.id}/`)} tabindex="-1" aria-hidden="true">
@@ -52,7 +53,7 @@ const writers = authors.filter(a => countFor(a.id) > 0).slice(0, 8);
         ) : (
           <div class="recent-empty">
             <p>نوشته‌های این شماره هنوز روی سایت نیامده‌اند. نسخه کامل را می‌توانید به‌صورت PDF بخوانید.</p>
-            <a class="button button-ghost" href={withBase(item.data.pdf)}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
+            <a class="button button-ghost" href={withBase(pdfDownloadUrl(item.data.pdf))}><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14" /></svg>دریافت PDF</a>
           </div>
         )}
       </div>
