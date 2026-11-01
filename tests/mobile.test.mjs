@@ -34,10 +34,10 @@ test('mobile menu and theme initialize with modern and legacy media listeners', 
 });
 
 
-test('image recovery keeps the current download until the original loads and never loops', async () => {
+test('image recovery keeps the current download until the small fallback loads and never loops', async () => {
   const source = ts.transpile(await readFile(new URL('../src/scripts/site.ts', import.meta.url), 'utf8'), { target: ts.ScriptTarget.ES2018 });
   for (const scenario of ['error', 'timeout', 'primary-wins', 'fallback-fails', 'lazy']) {
-    const { document, window } = parseHTML('<html><body><picture><source srcset="/optimized.webp 750w"><img src="/fallback.png" data-image-original="/covers/20.webp"></picture></body></html>');
+    const { document, window } = parseHTML('<html><body><picture><source srcset="/optimized.webp 750w"><img src="/fallback.png" data-image-original="/covers/20.webp" data-image-recovery="/small.jpeg"></picture></body></html>');
     Object.defineProperty(document, 'baseURI', { value: 'https://example.com/' });
     const img = document.querySelector('img');
     Object.defineProperties(img, {
@@ -67,7 +67,7 @@ test('image recovery keeps the current download until the original loads and nev
     if (scenario === 'error' || scenario === 'fallback-fails') img.dispatchEvent(new window.Event('error'));
     else [...timers.values()][0]();
     assert.equal(probes.length, 1);
-    assert.equal(probes[0].src, 'https://example.com/covers/20.webp');
+    assert.equal(probes[0].src, 'https://example.com/small.jpeg');
     assert.ok(document.querySelector('source'), 'keep the primary request while probing');
     const callback = probes[0].onload;
     if (scenario === 'primary-wins') {
@@ -83,10 +83,33 @@ test('image recovery keeps the current download until the original loads and nev
     } else {
       callback();
       assert.equal(document.querySelector('source'), null);
-      assert.equal(img.getAttribute('src'), 'https://example.com/covers/20.webp');
+      assert.equal(img.getAttribute('src'), 'https://example.com/small.jpeg');
     }
     img.dispatchEvent(new window.Event('error'));
     assert.equal(probes.length, 1, 'no retry loops');
     assert.equal(timers.size, 0);
+  }
+});
+
+
+test('cover effects become available only after the full image loads', async () => {
+  const source = ts.transpile(await readFile(new URL('../src/scripts/site.ts', import.meta.url), 'utf8'), { target: ts.ScriptTarget.ES2018 });
+  for (const cached of [false, true]) {
+    const { document, window } = parseHTML('<html><body><a class="recent-cover"><img class="recent-cover-full"></a></body></html>');
+    const img = document.querySelector('img');
+    Object.defineProperties(img, {
+      complete: { value: cached, writable: true },
+      naturalWidth: { value: cached ? 750 : 0, writable: true },
+    });
+    vm.runInNewContext(source, { document, matchMedia: () => ({ matches: false, addEventListener() {} }) });
+    const cover = document.querySelector('a');
+    assert.equal(cover.hasAttribute('data-full-ready'), cached);
+    if (!cached) {
+      img.dispatchEvent(new window.Event('error'));
+      assert.equal(cover.hasAttribute('data-full-ready'), false);
+      img.naturalWidth = 750;
+      img.dispatchEvent(new window.Event('load'));
+      assert.equal(cover.getAttribute('data-full-ready'), 'true');
+    }
   }
 });

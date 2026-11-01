@@ -56,50 +56,60 @@ export async function optimizeImages(directory, { base = '/' } = {}) {
         const metadata = await sharp(buffer).metadata();
         if ((metadata.pages || 1) > 1) continue;
         const rotated = [5, 6, 7, 8].includes(metadata.orientation);
-        source = { buffer, width: rotated ? metadata.height : metadata.width, height: rotated ? metadata.width : metadata.height };
+        source = { buffer, width: rotated ? metadata.height : metadata.width, height: rotated ? metadata.width : metadata.height, alpha: metadata.hasAlpha };
         if (!source.width || !source.height) throw new Error(`Missing image dimensions: ${src}`);
         sources.set(sourcePath, source);
       }
-      // Preserve the untouched original as a network recovery candidate.
+      // Keep the original intact and retain its provenance.
       img.setAttribute('data-image-original', src);
       const settings = profile(img);
       const widths = [...new Set(settings.widths.map(width => Math.min(width, source.width)))].sort((a, b) => a - b);
-      const choices = [];
-      for (const width of widths) {
-        const key = `${sourcePath}:${width}`;
-        let variant = variants.get(key);
-        if (!variant) {
-          const buffer = await sharp(source.buffer).rotate().resize({ width, withoutEnlargement: true }).webp({ quality: 85 }).toBuffer();
-          const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 20);
-          const name = `image-${hash}-${width}.webp`;
-          await writeFile(resolve(assets, name), buffer);
-          variant = { url: `${prefix}/_astro/${name}`, width };
-          variants.set(key, variant);
-        }
-        choices.push(variant);
-      }
-      const fallback = choices.find(choice => choice.width >= Math.min(settings.fallback, source.width)) || choices.at(-1);
-      // Every image has a format fallback, including original WebP magazine covers.
-      if (!/\.(?:png|jpe?g)$/i.test(local)) {
-        const key = sourcePath + ':' + fallback.width + ':png';
-        let compatible = variants.get(key);
-        if (!compatible) {
-          const buffer = await sharp(source.buffer).rotate().resize({ width: fallback.width, withoutEnlargement: true }).png().toBuffer();
-          const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 20);
-          const name = 'image-' + hash + '-' + fallback.width + '.png';
-          await writeFile(resolve(assets, name), buffer);
-          compatible = { url: prefix + '/_astro/' + name, width: fallback.width };
-          variants.set(key, compatible);
-        }
-        img.setAttribute('src', compatible.url);
-      }
-      const responsive = document.createElement('source');
       const picture = document.createElement('picture');
-      responsive.setAttribute('type', 'image/webp');
       img.replaceWith(picture);
-      picture.append(responsive, img);
-      responsive.setAttribute('srcset', choices.map(choice => `${choice.url} ${choice.width}w`).join(', '));
-      responsive.setAttribute('sizes', settings.sizes);
+      // AVIF keeps full-resolution detail at a smaller transfer size. WebP
+      // remains available for browsers without AVIF support.
+      for (const format of ['avif', 'webp']) {
+        const choices = [];
+        for (const width of widths) {
+          const key = sourcePath + ':' + width + ':' + format;
+          let variant = variants.get(key);
+          if (!variant) {
+            const pipeline = sharp(source.buffer).rotate().resize({ width, withoutEnlargement: true });
+            const buffer = await (format === 'avif'
+              ? pipeline.avif({ quality: 65, effort: 5, chromaSubsampling: '4:4:4' })
+              : pipeline.webp({ quality: 82, effort: 5 })).toBuffer();
+            const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 20);
+            const name = 'image-' + hash + '-' + width + '.' + format;
+            await writeFile(resolve(assets, name), buffer);
+            variant = { url: prefix + '/_astro/' + name, width };
+            variants.set(key, variant);
+          }
+          choices.push(variant);
+        }
+        const responsive = document.createElement('source');
+        responsive.setAttribute('type', 'image/' + format);
+        responsive.setAttribute('srcset', choices.map(choice => choice.url + ' ' + choice.width + 'w').join(', '));
+        responsive.setAttribute('sizes', settings.sizes);
+        picture.append(responsive);
+      }
+      // A modest, independently encoded fallback also works when modern image
+      // requests stall. Never download the large original as the first retry.
+      const width = Math.min(settings.fallback, source.width, 480);
+      const format = source.alpha ? 'png' : 'jpeg';
+      const key = sourcePath + ':' + width + ':' + format;
+      let compatible = variants.get(key);
+      if (!compatible) {
+        const pipeline = sharp(source.buffer).rotate().resize({ width, withoutEnlargement: true });
+        const buffer = await (source.alpha ? pipeline.png() : pipeline.jpeg({ quality: 82, mozjpeg: true })).toBuffer();
+        const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 20);
+        const name = 'image-' + hash + '-' + width + '.' + format;
+        await writeFile(resolve(assets, name), buffer);
+        compatible = { url: prefix + '/_astro/' + name, width };
+        variants.set(key, compatible);
+      }
+      img.setAttribute('src', compatible.url);
+      img.setAttribute('data-image-recovery', compatible.url);
+      picture.append(img);
       if (!img.hasAttribute('width')) img.setAttribute('width', String(source.width));
       if (!img.hasAttribute('height')) img.setAttribute('height', String(source.height));
       img.setAttribute('decoding', 'async');

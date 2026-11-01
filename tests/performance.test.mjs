@@ -26,7 +26,7 @@ test('production images preserve originals, CSP and base paths, share variants, 
   await writeFile(join(root, 'second.html'), html);
   const report = await optimizeImages(root, { base: '/mag/' });
   assert.equal(report.pages, 2);
-  assert.equal(report.variants, 7);
+  assert.equal(report.variants, 16);
   const output = await readFile(join(root, 'index.html'), 'utf8');
   const { document } = parseHTML(output);
   assert.equal(document.querySelector('script').textContent, themeInit);
@@ -38,11 +38,13 @@ test('production images preserve originals, CSP and base paths, share variants, 
   assert.equal(image.getAttribute('loading'), 'eager');
   assert.equal(avatar.getAttribute('loading'), 'lazy');
   assert.equal(avatar.previousElementSibling.getAttribute('sizes'), '72px');
-  assert.equal(image.getAttribute('src'), '/mag/images/room.jpg');
+  assert.match(image.getAttribute('src'), /^\/mag\/_astro\/.+\.jpeg$/);
+  assert.equal(image.getAttribute('data-image-recovery'), image.getAttribute('src'));
+  assert.equal(image.parentElement.querySelector('source').getAttribute('type'), 'image/avif');
   assert.equal(image.getAttribute('data-image-original'), '/mag/images/room.jpg');
   assert.equal(image.previousElementSibling.getAttribute('type'), 'image/webp');
   for (const img of [image, avatar]) {
-    for (const entry of img.previousElementSibling.getAttribute('srcset').split(',')) {
+    for (const entry of [...img.parentElement.querySelectorAll('source')].flatMap(source => source.getAttribute('srcset').split(','))) {
       const [url, descriptor] = entry.trim().split(/\s+/);
       assert.ok(url.startsWith('/mag/_astro/'));
       const metadata = await sharp(await readFile(join(root, url.slice('/mag/'.length)))).metadata();
@@ -87,6 +89,6 @@ test('WebP originals include a decodable fallback and preserve transparency', as
   assert.equal(metadata.width, 100);
   assert.equal(metadata.height, 150);
   assert.equal(metadata.hasAlpha, true);
-  assert.equal(document.querySelector('source').getAttribute('type'), 'image/webp');
+  assert.equal(document.querySelector('source').getAttribute('type'), 'image/avif');
   assert.equal((await optimizeImages(root, { base: '/mag/' })).variants, 0);
 });

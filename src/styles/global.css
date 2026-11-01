@@ -117,8 +117,8 @@ audio{width:100%;display:block;margin-block:.7rem}
 .recent-cover{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;border:1px solid var(--edge);border-radius:var(--radius-card);background:var(--tint)}
 .recent-cover img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:opacity .35s ease}
 .recent-cover .recent-cover-full{position:absolute;inset:0;object-fit:contain;object-position:center;background:var(--paper);opacity:0}
-.recent-cover:hover .recent-cover-crop,.recent-col:focus-within .recent-cover-crop{opacity:0}
-.recent-cover:hover .recent-cover-full,.recent-col:focus-within .recent-cover-full{opacity:.62}
+.recent-cover[data-full-ready]:hover .recent-cover-crop,.recent-col:focus-within .recent-cover[data-full-ready] .recent-cover-crop{opacity:0}
+.recent-cover[data-full-ready]:hover .recent-cover-full,.recent-col:focus-within .recent-cover[data-full-ready] .recent-cover-full{opacity:.62}
 .recent-issue{font-size:clamp(1.35rem,1.15rem + .8vw,1.75rem);margin-top:1rem}
 .recent-issue a:hover{text-decoration:none}
 .recent-date{margin-bottom:1.25rem;font-size:var(--text-sm);color:var(--quiet)}
@@ -141,8 +141,8 @@ audio{width:100%;display:block;margin-block:.7rem}
 .card-media{position:relative;display:block;aspect-ratio:16/9;margin-bottom:1.1rem;overflow:hidden;border:1px solid var(--edge);border-radius:var(--radius-card);background:var(--tint)}
 .card-media img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:opacity .35s ease}
 .card-media .card-cover-full{position:absolute;inset:0;object-fit:contain;object-position:center;background:var(--paper);opacity:0}
-.card-media:hover .card-cover-crop,.article-card:focus-within .card-cover-crop{opacity:0}
-.card-media:hover .card-cover-full,.article-card:focus-within .card-cover-full{opacity:.62}
+.card-media[data-full-ready]:hover .card-cover-crop,.article-card:focus-within .card-media[data-full-ready] .card-cover-crop{opacity:0}
+.card-media[data-full-ready]:hover .card-cover-full,.article-card:focus-within .card-media[data-full-ready] .card-cover-full{opacity:.62}
 .article-card-text{height:100%;padding:1.15rem 1.2rem .9rem;border:1px solid var(--edge);border-radius:var(--radius-card);background:var(--surface);transition:border-color var(--ease)}
 .article-card-text:hover{border-color:color-mix(in srgb,var(--green) 55%,transparent)}
 .article-card-text .card-title{font-size:1.15rem}
@@ -537,10 +537,10 @@ audio{width:100%;display:block;margin-block:.7rem}
 .reading-aside,.issue-shelf{position:static;max-height:none}
 }
 @media(hover:none) and (pointer:coarse){
-.recent-cover:hover .recent-cover-crop,.recent-col:focus-within .recent-cover-crop,
-.card-media:hover .card-cover-crop,.article-card:focus-within .card-cover-crop{opacity:1}
-.recent-cover:hover .recent-cover-full,.recent-col:focus-within .recent-cover-full,
-.card-media:hover .card-cover-full,.article-card:focus-within .card-cover-full{opacity:0}
+.recent-cover[data-full-ready]:hover .recent-cover-crop,.recent-col:focus-within .recent-cover[data-full-ready] .recent-cover-crop,
+.card-media[data-full-ready]:hover .card-cover-crop,.article-card:focus-within .card-media[data-full-ready] .card-cover-crop{opacity:1}
+.recent-cover[data-full-ready]:hover .recent-cover-full,.recent-col:focus-within .recent-cover[data-full-ready] .recent-cover-full,
+.card-media[data-full-ready]:hover .card-cover-full,.article-card:focus-within .card-media[data-full-ready] .card-cover-full{opacity:0}
 }
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}.issue-card:hover .cover-frame,.author-card:hover,.author-card:focus-within,.path-card:hover{transform:none}}

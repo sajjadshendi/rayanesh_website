@@ -76,8 +76,17 @@ if (archive) {
   addEventListener('hashchange', () => show(fromHash()));
 }
 
+// Do not hide the visible crop until the full cover has actually decoded.
+for (const img of document.querySelectorAll<HTMLImageElement>('.recent-cover-full, .card-cover-full')) {
+  const ready = () => {
+    if (img.naturalWidth > 0) img.closest<HTMLElement>('.recent-cover, .card-media')?.setAttribute('data-full-ready', 'true');
+  };
+  img.addEventListener('load', ready);
+  if (img.complete) ready();
+}
+
 // A picture's format fallback does not handle network errors automatically.
-// Probe the untouched original without cancelling a potentially slow download.
+// Probe a small compatible image without cancelling a potentially slow download.
 // Only visible images get a timeout, and each image gets at most one probe.
 for (const img of document.querySelectorAll<HTMLImageElement>('img[data-image-original]')) {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -104,7 +113,7 @@ for (const img of document.querySelectorAll<HTMLImageElement>('img[data-image-or
     attempted = true;
     if (timer !== undefined) clearTimeout(timer);
     timer = undefined;
-    const original = img.dataset.imageOriginal;
+    const original = img.dataset.imageRecovery || img.dataset.imageOriginal;
     if (!original) return;
     const url = new URL(original, document.baseURI);
     // Do not retry the same URL or send image requests to other hosts.
@@ -128,7 +137,7 @@ for (const img of document.querySelectorAll<HTMLImageElement>('img[data-image-or
     observer?.disconnect();
     if (loaded()) { finish(); return; }
     if (img.complete) recover();
-    else timer = setTimeout(recover, 20000);
+    else timer = setTimeout(recover, 8000);
   };
   img.addEventListener('load', finish);
   img.addEventListener('error', recover);

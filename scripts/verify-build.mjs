@@ -51,8 +51,8 @@ for (const path of files.filter(p => extname(p) === '.html')) {
   }
   for (const img of document.querySelectorAll('img')) {
     if (!img.hasAttribute('alt')) errors.push(`${name}: missing image alt`);
-    const responsive = img.parentElement?.tagName === 'PICTURE' ? img.parentElement.querySelector('source') : img;
-    if (responsive?.hasAttribute('srcset')) {
+    const sources = img.parentElement?.tagName === 'PICTURE' ? img.parentElement.querySelectorAll('source') : [img];
+    for (const responsive of sources) if (responsive.hasAttribute('srcset')) {
       if (!responsive.hasAttribute('sizes') || !img.hasAttribute('width') || !img.hasAttribute('height')) errors.push(`${name}: responsive image missing dimensions/sizes`);
       for (const candidate of responsive.getAttribute('srcset').split(',')) {
         const [url, descriptor] = candidate.trim().split(/\s+/);
